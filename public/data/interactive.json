@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "title": "Sample Image",
+    "description": "This is a sample image.",
+    "link": "images/1.jpg",
+    "x": 0.5,
+    "y": 0.5,
+    "model": "image"
+  },
+  {
+    "id": 2,
+    "title": "Sample Video",
+    "description": "This is a sample video.",
+    "link": "video/video1.mp4",
+    "x": 0.3,
+    "y": 0.7,
+    "model": "video"
+  },
+  {
+    "id": 3,
+    "title": "Another Image",
+    "description": "This is another sample image.",
+    "link": "images/2.jpg",
+    "x": 0.8,
+    "y": 0.2,
+    "model": "image"
+  },
+  {
+    "id": 4,
+    "title": "Another Video",
+    "description": "This is another sample video.",
+    "link": "video/video1.mp4",
+    "x": 0.1,
+    "y": 0.9,
+    "model": "video"
+  },
+  {
+    "id": 5,
+    "title": "Another Image",
+    "description": "This is another sample image.",
+    "link": "images/3.jpg",
+    "x": 0.4,
+    "y": 0.4,
+    "model": "image"
+  }
+]
