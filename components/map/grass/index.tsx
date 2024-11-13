@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
+// @ts-ignore
 import { InstancedMesh } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
