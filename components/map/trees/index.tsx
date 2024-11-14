@@ -22,6 +22,7 @@ const particleColor = 'rgba(120, 255, 100, 1)';
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
+const animDistance = 1;
 
 const dataFile = '/data/trees.csv';
 
@@ -43,46 +44,69 @@ function loadCSVData() {
         });
 }
 
-export function MapTrees({ mapScale }: { mapScale: number }) {
-    const [origData, setOrigData] = useState<DataStructure[]>([]);
-    const meshRef = useRef<THREE.InstancedMesh>(null);
-    const dummy = useMemo(() => new THREE.Object3D(), []);
-    const { nodes, materials } = useGLTF('/models/tree.glb');
+function splitData(data: DataStructure[]): [DataStructure[], DataStructure[]] {
+    const shuffledData = data.sort(() => 0.5 - Math.random());
+    const splitIndex = Math.floor(data.length * 0.4);
+    const firstSet = shuffledData.slice(0, splitIndex);
+    const secondSet = shuffledData.slice(splitIndex);
+    return [firstSet, secondSet];
+}
 
-    console.log(nodes, materials);
+export function MapTrees({ mapScale, MP }: { mapScale: number, MP: THREE.Vector3 }) {
+    const [origData1, setOrigData1] = useState<DataStructure[]>([]);
+    const [origData2, setOrigData2] = useState<DataStructure[]>([]);
+    const meshRef1 = useRef<THREE.InstancedMesh>(null);
+const dummy = useMemo(() => new THREE.Object3D(), []);
+    const { nodes: nodes1, materials: materials1 } = useGLTF('/models/tree.glb');
+    const { nodes: nodes2, materials: materials2 } = useGLTF('/models/tree2.glb');
 
     useEffect(() => {
         loadCSVData().then((data) => {
-            setOrigData(data);
+            setOrigData1(data);
         });
     }, []);
 
 
     useFrame(() => {
-        if (!meshRef.current) return;
+        if (!meshRef1.current) return
 
         const time = performance.now() * animSpeed;
-        origData.forEach((data, index) => {
+
+        origData1.forEach((data, index) => {
             const tx = data.tx;
             const ty = data.ty;
             const tz = data.tz;
-            dummy.position.set(tx * mapScale, tz * mapScale + particleSize[2] / 2, -ty * mapScale);
-            let scale = noise.perlin3(tx * mapScale, ty * mapScale, tz * mapScale) *.7 + 0.5;
+
+            const objectPosition = new THREE.Vector3(tx * mapScale, tz * mapScale, -ty * mapScale);
+            const distance = MP.distanceTo(objectPosition);
+
+            let scale = noise.perlin3(tx * mapScale, ty * mapScale, tz * mapScale) * 1.2;
+            scale = Math.abs(scale);
+
+            if (distance < animDistance) {
+                scale = scale - (1 - distance / animDistance) * scale;
+            }
+
+            dummy.position.set(tx * mapScale, tz * mapScale + particleSize[2]/2, -ty * mapScale);
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
             let randomRotation = noise.simplex2(tx*mapScale, ty*mapScale) * Math.PI;
-            dummy.rotation.set(0, randomRotation, 0);
+            dummy.rotation.set(-Math.PI/2, 0, 0);
             dummy.updateMatrix();
 
-            meshRef.current!.setMatrixAt(index, dummy.matrix);
+            meshRef1.current!.setMatrixAt(index, dummy.matrix);
         });
 
-        meshRef.current.instanceMatrix.needsUpdate = true;
+
+        meshRef1.current.instanceMatrix.needsUpdate = true;
     });
 
 
     return (
-        <instancedMesh ref={meshRef} args={[nodes.Tree.geometry, materials.Tree, origData.length]} />
+        <>
+            <instancedMesh ref={meshRef1} args={[nodes1.Tree.geometry, materials1.Tree, origData1.length]}/>
+            {/*<instancedMesh ref={meshRef2} args={[nodes2.Tree.geometry, materials2.Tree, origData2.length]}/>*/}
+        </>
     );
 
 }

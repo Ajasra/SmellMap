@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { InstancedMesh } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import Papa from 'papaparse';
 import { Noise } from 'noisejs';
@@ -18,12 +17,11 @@ interface DataStructure {
 }
 
 const particleSize = [0.3, 0.7, 0.3];
-const particleColor = 'rgba(100, 100, 100, 1)';
 const animSpeed = 0.003;
-const animPower = 0.004;
-const animScale = 50;
 
-const dataFile = '/data/buildings_b.csv';
+const animDistance = 1;
+
+const dataFile = '/data/buildings.csv';
 
 const noise = new Noise(Math.random());
 
@@ -43,31 +41,38 @@ function loadCSVData() {
         });
 }
 
-export function MapBuildingsBg({ mapScale }: { mapScale: number }) {
+export function MapBuildingsBg({ mapScale, MP }: { mapScale: number, MP: THREE.Vector3 }) {
     const [origData, setOrigData] = useState<DataStructure[]>([]);
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const dummy = useMemo(() => new THREE.Object3D(), []);
+    const texture = useLoader(THREE.TextureLoader, '/textures/concrete.jpg');
 
     useEffect(() => {
         loadCSVData().then((data) => {
             setOrigData(data);
         });
-    }, []);
 
+    }, []);
 
     useFrame(() => {
         if (!meshRef.current) return;
 
-        const time = performance.now() * animSpeed;
         origData.forEach((data, index) => {
             const tx = data.tx;
             const ty = data.ty;
             const tz = data.tz;
-            dummy.position.set(tx * mapScale, tz * mapScale + particleSize[2]/2, -ty * mapScale);
-            let scale = noise.perlin3(tx, ty, tz) * 0.5 + 0.5;
+            const s = data.scale;
+            const objectPosition = new THREE.Vector3(tx * mapScale, tz * mapScale, -ty * mapScale);
+            const distance = MP.distanceTo(objectPosition);
+
+            let scale = s;
+            if (distance < animDistance) {
+                scale = s - (1 - distance / animDistance) * s;
+            }
+
+            dummy.position.set(tx * mapScale, (tz * mapScale) + (particleSize[1] * scale / 2), -ty * mapScale);
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
-            // dummy.rotation.set(-Math.PI/2, 0, 0);
             dummy.updateMatrix();
 
             meshRef.current.setMatrixAt(index, dummy.matrix);
@@ -77,13 +82,15 @@ export function MapBuildingsBg({ mapScale }: { mapScale: number }) {
     });
 
     return (
-        <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-            <boxGeometry args={[1, 1]}/>
-            <meshPhongMaterial
-                color={particleColor}
-                transparent={true}
-                opacity={0.8}
-            />
-        </instancedMesh>
+        <>
+            <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
+                <boxGeometry args={[1, 1, 1]}/>
+                <meshPhongMaterial
+                    map={texture}
+                    transparent={true}
+                    opacity={0.8}
+                />
+            </instancedMesh>
+        </>
     );
 }

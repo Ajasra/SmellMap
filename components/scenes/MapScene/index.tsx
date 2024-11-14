@@ -11,20 +11,23 @@ import {useState} from "react";
 import {MapWater} from "../../map/water";
 import {MapGrass} from "../../map/grass";
 import {MapTrees} from "../../map/trees";
-import {MapBuildingsSm} from "../../map/buildings_sm";
 import {MapBuildingsBg} from "../../map/buildings_bg";
 import {MapRoads} from "../../map/roads";
 import {MapHighway} from "../../map/highway";
 import {MapInteractive} from "../../map/interactive";
+import {RoadMap} from "../../map/road_map";
+import {MouseSphere} from "../../map/mouse";
+
+import * as THREE from 'three';
 
 const scale = 30;
 const offset = [-scale/2, 0, scale/2]
-const backgroundCol = "#888888";
+const backgroundCol = "#333333";
 
 export function MapScene() {
 
     const [isLoading, setIsLoading] = useState(true);
-
+    const [MP, setMP] = useState(new THREE.Vector3);
 
     function start_handler() {
         return
@@ -43,24 +46,23 @@ export function MapScene() {
                         backgroundColor: backgroundCol,
                     }}
             >
-                <fog attach="fog" color={backgroundCol} near={4} far={20}/>
+                {/*<fog attach="fog" color={backgroundCol} near={4} far={20}/>*/}
                 <ambientLight intensity={0.3}/>
                 <directionalLight position={[10, 10, 5]} intensity={1}/>
                 <OrbitControls
                     maxPolarAngle={Math.PI / 2 - Math.PI / 12}
-                    // maxPolarAngle={Math.PI - Math.PI / 6}
                 />
                 <group position={offset}>
                     <MapWater mapScale={scale}/>
                     <MapGrass mapScale={scale}/>
-                    <MapTrees mapScale={scale}/>
-                    <MapBuildingsSm mapScale={scale}/>
-                    <MapBuildingsBg mapScale={scale}/>
-                    <MapRoads mapScale={scale}/>
-                    <MapHighway mapScale={scale}/>
+                    <MapTrees mapScale={scale} MP={MP}/>
+                    <MapBuildingsBg mapScale={scale} MP={MP}/>
+                    {/*<MapRoads mapScale={scale}/>*/}
+                    {/*<MapHighway mapScale={scale}/>*/}
                     <MapInteractive mapScale={scale}/>
+                    <MouseSphere mapScale={scale} setMP={setMP}/>
                 </group>
-
+                {/*<RoadMap mapScale={scale} />*/}
                 <axesHelper args={[5]}/>
                 {/*<EffectComposer autoClear={false}>*/}
                 {/*    <DepthOfField focusDistance={1} focalLength={.1} bokehScale={20} />*/}
