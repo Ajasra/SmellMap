@@ -14,7 +14,7 @@ interface InteractiveObject {
     model: string;
 }
 
-export function MapInteractive({ mapScale }: { mapScale: number }) {
+export function MapInteractive({ mapScale, setActiveId, activeId }: { mapScale: number, setActiveId: (id: number) => void, activeId: number | null }) {
     const [interactiveObjects, setInteractiveObjects] = useState<InteractiveObject[]>([]);
     const [clickedObjects, setClickedObjects] = useState<{ [key: number]: boolean }>({});
     const [selectedObject, setSelectedObject] = useState<InteractiveObject | null>(null);
@@ -50,6 +50,7 @@ export function MapInteractive({ mapScale }: { mapScale: number }) {
         setClickedObjects((prev) => ({ ...prev, [obj.id]: !prev[obj.id] }));
         setSelectedObject(obj);
         setModalOpened(true);
+        setActiveId(obj.id);
     };
 
     return (

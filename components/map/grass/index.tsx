@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 // @ts-ignore
 import { InstancedMesh } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import {useFrame, useLoader} from '@react-three/fiber';
 import * as THREE from 'three';
 import Papa from 'papaparse';
 import { Noise } from 'noisejs';
@@ -19,7 +19,7 @@ interface DataStructure {
 }
 
 const particleSize = [0.1, 0.1, 0.1];
-const particleColor = 'rgba(50, 255, 100, 1)';
+const particleColor = 'rgba(250, 200, 100, 1)';
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
@@ -48,6 +48,8 @@ export function MapGrass({ mapScale }: { mapScale: number }) {
     const [origData, setOrigData] = useState<DataStructure[]>([]);
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const dummy = useMemo(() => new THREE.Object3D(), []);
+    const texture = useLoader(THREE.TextureLoader, '/textures/grass.jpg');
+
 
     useEffect(() => {
         loadCSVData().then((data) => {
@@ -65,10 +67,11 @@ export function MapGrass({ mapScale }: { mapScale: number }) {
             const ty = data.ty;
             const tz = data.tz;
             dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
-            let scale = noise.perlin3(tx, ty, tz) * 0.5 + 0.5;
+            let scale = noise.perlin3(tx*mapScale, ty * mapScale, tz * mapScale);
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
-            dummy.rotation.set(-Math.PI/2, 0, 0);
+            let randomRotation = noise.simplex2(tx*mapScale, ty*mapScale) * Math.PI;
+            dummy.rotation.set(-Math.PI/2, 0, randomRotation);
             dummy.updateMatrix();
 
             meshRef.current.setMatrixAt(index, dummy.matrix);
@@ -79,11 +82,13 @@ export function MapGrass({ mapScale }: { mapScale: number }) {
 
     return (
         <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-            <planeGeometry args={[1, 1]}/>
+            <sphereGeometry args={[1, 32, 32]}/>
             <meshPhongMaterial
+                // map={texture}
                 color={particleColor}
-                transparent={true}
-                opacity={0.8}
+                // alphaMap={texture}
+                // transparent={true}
+                // opacity={0.8}
             />
         </instancedMesh>
     );

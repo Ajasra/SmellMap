@@ -87,7 +87,7 @@ const dummy = useMemo(() => new THREE.Object3D(), []);
                 scale = scale - (1 - distance / animDistance) * scale;
             }
 
-            dummy.position.set(tx * mapScale, tz * mapScale + particleSize[2]/2, -ty * mapScale);
+            dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
             let randomRotation = noise.simplex2(tx*mapScale, ty*mapScale) * Math.PI;

@@ -2,12 +2,12 @@
 
 import { MantineProvider } from '@mantine/core';
 import css from "../MainScene/MainScene.module.css";
-import {Canvas} from "@react-three/fiber";
-import {OrbitControls} from "@react-three/drei";
+import {Canvas, useFrame} from "@react-three/fiber";
+import {OrbitControls, PerspectiveCamera} from "@react-three/drei";
 import { EffectComposer, DepthOfField } from '@react-three/postprocessing'
 import {Button} from "@mantine/core";
 import {PlayIcon} from "@radix-ui/react-icons";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {MapWater} from "../../map/water";
 import {MapGrass} from "../../map/grass";
 import {MapTrees} from "../../map/trees";
@@ -19,24 +19,33 @@ import {RoadMap} from "../../map/road_map";
 import {MouseSphere} from "../../map/mouse";
 
 import * as THREE from 'three';
+import {TopRightCanvas} from "../ObjectCanvas";
 
 const scale = 30;
 const offset = [-scale/2, 0, scale/2]
-const backgroundCol = "#333333";
+const backgroundCol = "#eeeeee";
 
 export function MapScene() {
 
     const [isLoading, setIsLoading] = useState(true);
     const [MP, setMP] = useState(new THREE.Vector3);
+    const [activeId, setActiveId] = useState<number | null>(null);
+    const cameraRef = useRef<THREE.PerspectiveCamera>(null);
+
 
     function start_handler() {
         return
     }
 
+    useEffect(() => {
+        // alert(activeId)
+    },[activeId])
+
+
     return (
         <div className={css.container}>
             {isLoading && <div className="loader">Loading...</div>}
-            <Canvas camera={{position: [0, 4, 6]}}
+            <Canvas
                     style={{
                         width: "100vw",
                         height: "100vh",
@@ -45,8 +54,14 @@ export function MapScene() {
                         left: 0,
                         backgroundColor: backgroundCol,
                     }}
+
             >
-                {/*<fog attach="fog" color={backgroundCol} near={4} far={20}/>*/}
+                <PerspectiveCamera
+                    makeDefault
+                    position={[0, 0, 10]}
+                    ref={cameraRef}
+                />
+                <fog attach="fog" color={backgroundCol} near={4} far={20}/>
                 <ambientLight intensity={0.3}/>
                 <directionalLight position={[10, 10, 5]} intensity={1}/>
                 <OrbitControls
@@ -59,7 +74,7 @@ export function MapScene() {
                     <MapBuildingsBg mapScale={scale} MP={MP}/>
                     {/*<MapRoads mapScale={scale}/>*/}
                     {/*<MapHighway mapScale={scale}/>*/}
-                    <MapInteractive mapScale={scale}/>
+                    <MapInteractive mapScale={scale}  setActiveId={setActiveId} activeId={activeId}/>
                     <MouseSphere mapScale={scale} setMP={setMP}/>
                 </group>
                 {/*<RoadMap mapScale={scale} />*/}
@@ -69,6 +84,7 @@ export function MapScene() {
                 {/*</EffectComposer>*/}
 
             </Canvas>
+            <TopRightCanvas setActiveId={setActiveId} activeId={activeId} cameraRef={cameraRef} mapScale={scale}/>
             {!isLoading && (
                 <>
                 <Button
