@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 
-export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos: THREE.Vector3) => void } ) {
+export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos: THREE.Vector3) => void }) {
     const [mousePosition, setMousePosition] = useState(new THREE.Vector2());
     const sphereRef = useRef<THREE.Mesh>(null);
     const [mousePos, setMousePos] = useState(new THREE.Vector3());
@@ -15,9 +15,21 @@ export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos
             ));
         };
 
+        const handleTouchMove = (event: TouchEvent) => {
+            if (event.touches.length > 0) {
+                const touch = event.touches[0];
+                setMousePosition(new THREE.Vector2(
+                    (touch.clientX / window.innerWidth) * 2 - 1,
+                    -(touch.clientY / window.innerHeight) * 2 + 1
+                ));
+            }
+        };
+
         window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('touchmove', handleTouchMove);
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchmove', handleTouchMove);
         };
     }, []);
 
@@ -35,8 +47,8 @@ export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos
         const intersection = new THREE.Vector3();
         raycaster.ray.intersectPlane(plane, intersection);
         let mP = new THREE.Vector3().copy(intersection);
-        mP.x += mapScale/2;
-        mP.z -= mapScale/2;
+        mP.x += mapScale / 2;
+        mP.z -= mapScale / 2;
         mP.y = 1;
         setMousePos(mP);
 
@@ -44,11 +56,9 @@ export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos
     });
 
     return (
-        <>
-            <mesh ref={sphereRef} position={[0, 1, 0]}>
-                <sphereGeometry args={[0.1, 32, 32]} />
-                <meshBasicMaterial color="red" />
-            </mesh>
-        </>
-    )
+        <mesh ref={sphereRef} position={[0, 1, 0]}>
+            <sphereGeometry args={[0.1, 32, 32]} />
+            <meshBasicMaterial color="red" />
+        </mesh>
+    );
 }
