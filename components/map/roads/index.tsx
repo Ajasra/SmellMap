@@ -63,7 +63,7 @@ export function MapRoads({ mapScale }: { mapScale: number }) {
             const tx = data.tx;
             const ty = data.ty;
             const tz = data.tz;
-            dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
+            dummy.position.set(tx * mapScale, tz * mapScale *.9, -ty * mapScale);
             let scale = 1;
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
@@ -81,8 +81,11 @@ export function MapRoads({ mapScale }: { mapScale: number }) {
             <planeGeometry args={[1, 1]}/>
             <meshPhongMaterial
                 color={particleColor}
-                transparent={true}
-                opacity={0.8}
+                // transparent={true}
+                // opacity={0.8}
+                depthTest={true}
+                depthWrite={true}
+                side={THREE.DoubleSide}
             />
         </instancedMesh>
     );

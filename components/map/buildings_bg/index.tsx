@@ -3,6 +3,7 @@ import { useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import Papa from 'papaparse';
 import { Noise } from 'noisejs';
+import {useGLTF} from "@react-three/drei";
 
 interface DataStructure {
     tx: number;
@@ -16,7 +17,7 @@ interface DataStructure {
     shape: number;
 }
 
-const particleSize = [0.3, 0.7, 0.3];
+const particleSize = [0.2, 0.3, 0.2];
 const animSpeed = 0.003;
 
 const animDistance = 1;
@@ -45,7 +46,13 @@ export function MapBuildingsBg({ mapScale, MP }: { mapScale: number, MP: THREE.V
     const [origData, setOrigData] = useState<DataStructure[]>([]);
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const dummy = useMemo(() => new THREE.Object3D(), []);
-    const texture = useLoader(THREE.TextureLoader, '/textures/concrete.jpg');
+    const { nodes: nodes, materials: materials } = useGLTF('/models/building.glb');
+
+    // materials.concrete.side = THREE.DoubleSide;
+    // materials.concrete.depthTest = true;
+    // materials.concrete.depthWrite = true;
+    // materials.concrete.transparent = true;
+
 
     useEffect(() => {
         loadCSVData().then((data) => {
@@ -70,7 +77,7 @@ export function MapBuildingsBg({ mapScale, MP }: { mapScale: number, MP: THREE.V
                 scale = s - (1 - distance / animDistance) * s;
             }
 
-            dummy.position.set(tx * mapScale, (tz * mapScale) + (particleSize[1] * scale / 2), -ty * mapScale);
+            dummy.position.set(tx * mapScale, (tz * mapScale * 1.1), -ty * mapScale);
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
             dummy.updateMatrix();
@@ -83,14 +90,7 @@ export function MapBuildingsBg({ mapScale, MP }: { mapScale: number, MP: THREE.V
 
     return (
         <>
-            <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-                <boxGeometry args={[1, 1, 1]}/>
-                <meshPhongMaterial
-                    map={texture}
-                    transparent={true}
-                    opacity={0.8}
-                />
-            </instancedMesh>
+            <instancedMesh ref={meshRef} args={[nodes.Cube.geometry, materials.concrete, origData.length]}/>
         </>
     );
 }

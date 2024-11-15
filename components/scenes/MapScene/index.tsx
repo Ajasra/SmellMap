@@ -61,12 +61,13 @@ export function MapScene() {
                     position={[0, 0, 10]}
                     ref={cameraRef}
                 />
-                <fog attach="fog" color={backgroundCol} near={4} far={20}/>
-                <ambientLight intensity={0.3}/>
-                <directionalLight position={[10, 10, 5]} intensity={1}/>
+                {/*<fog attach="fog" color={backgroundCol} near={4} far={30}/>*/}
+                <ambientLight intensity={0.5}/>
+                <directionalLight position={[10, 10, 5]} intensity={2}/>
                 <OrbitControls
                     maxPolarAngle={Math.PI / 2 - Math.PI / 12}
                 />
+                <RoadMap mapScale={scale} />
                 <group position={offset}>
                     <MapWater mapScale={scale}/>
                     <MapGrass mapScale={scale}/>
@@ -77,7 +78,7 @@ export function MapScene() {
                     <MapInteractive mapScale={scale}  setActiveId={setActiveId} activeId={activeId}/>
                     <MouseSphere mapScale={scale} setMP={setMP}/>
                 </group>
-                {/*<RoadMap mapScale={scale} />*/}
+
                 <axesHelper args={[5]}/>
                 {/*<EffectComposer autoClear={false}>*/}
                 {/*    <DepthOfField focusDistance={1} focalLength={.1} bokehScale={20} />*/}

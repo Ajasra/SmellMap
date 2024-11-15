@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import {Modal, Image, Text, MantineProvider, Flex} from '@mantine/core';
+import {RadiantField} from "../../RadiantField";
 
 interface InteractiveObject {
     id: number;
@@ -56,31 +57,35 @@ export function MapInteractive({ mapScale, setActiveId, activeId }: { mapScale: 
     return (
         <>
             {interactiveObjects.map((obj) => (
-                <mesh
-                    key={obj.id}
-                    ref={(el) => {
-                        if (el) meshRefs.current[obj.id] = el;
-                    }}
-                    position={[obj.x * mapScale, 1.1, -obj.y * mapScale]}
-                    scale={.3}
-                    onClick={() => handleObjectClick(obj)}
-                >
-                    <boxGeometry attach="geometry" args={[1, 1, 1]} />
-                    <meshStandardMaterial attach="material" color={clickedObjects[obj.id] ? 'hotpink' : 'orange'} />
-                </mesh>
+                <>
+                    <mesh
+                        key={obj.id}
+                        ref={(el) => {
+                            if (el) meshRefs.current[obj.id] = el;
+                        }}
+                        position={[obj.x * mapScale, 1.1, -obj.y * mapScale]}
+                        scale={.3}
+                        onClick={() => handleObjectClick(obj)}
+                    >
+                        <boxGeometry attach="geometry" args={[1, 1, 1]}/>
+                        <meshStandardMaterial attach="material" color={clickedObjects[obj.id] ? 'hotpink' : 'orange'}/>
+                    </mesh>
+                    <RadiantField position={[obj.x * mapScale, 1.1, -obj.y * mapScale]}/>
+                </>
+
             ))}
 
             {selectedObject && (
                 <Html position={[selectedObject.x * mapScale, 1, -selectedObject.y * mapScale]}>
                     <MantineProvider>
-                    <Modal
-                        opened={modalOpened}
-                        onClose={() => setModalOpened(false)}
-                        title={selectedObject.title}
-                        styles={{
-                            modal: {
-                                width: screenWidth * 0.8,
-                                height: screenHeight * 0.8,
+                        <Modal
+                            opened={modalOpened}
+                            onClose={() => setModalOpened(false)}
+                            title={selectedObject.title}
+                            styles={{
+                                modal: {
+                                    width: screenWidth * 0.8,
+                                    height: screenHeight * 0.8,
                                 // display: 'flex',
                                 // flexDirection: 'column',
                                 // justifyContent: 'center',

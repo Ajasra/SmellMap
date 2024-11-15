@@ -81,8 +81,11 @@ export function MapHighway({ mapScale }: { mapScale: number }) {
             <planeGeometry args={[1, 1]}/>
             <meshPhongMaterial
                 color={particleColor}
-                transparent={true}
-                opacity={0.8}
+                // transparent={true}
+                // opacity={0.8}
+                depthTest={true}
+                depthWrite={true}
+                side={THREE.DoubleSide}
             />
         </instancedMesh>
     );

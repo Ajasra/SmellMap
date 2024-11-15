@@ -63,7 +63,7 @@ export function MapWater({ mapScale }: { mapScale: number }) {
       const ty = data.ty + Math.sin(time + data.ty * animScale) * animPower * 0.5 + Math.sin(time * 0.5 + data.tz * animScale/10) * animPower * .1;
       const tz = data.tz + (Math.sin(time + data.tz * animScale) * animPower + Math.sin(time * 0.5 + data.tx * animScale/10) * animPower * .1) / 8;
 
-      dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
+      dummy.position.set(tx * mapScale, tz * mapScale * .3, -ty * mapScale);
       let scale = noise.perlin3(tx * animScale, ty * animScale, tz * animScale + time * animSpeed) * 0.5 + 0.5;
       dummy.scale.set(
           particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
@@ -78,7 +78,7 @@ export function MapWater({ mapScale }: { mapScale: number }) {
   return (
     <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
       <sphereGeometry args={[1, 5, 5]} />
-      <meshPhongMaterial
+      <meshStandardMaterial
           color={particleColor}
           transparent={true}
           opacity={0.8}
