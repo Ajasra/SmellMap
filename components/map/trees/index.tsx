@@ -17,7 +17,7 @@ interface DataStructure {
   shape: number;
 }
 
-const particleSize = 1 / 20;
+const particleSize = 1 / 500;
 const particleColor = "rgba(120, 255, 100, 1)";
 const animSpeed = 0.003;
 const animPower = 0.004;
@@ -60,9 +60,10 @@ export function MapTrees({
   MP: THREE.Vector3;
 }) {
   const [origData, setOrigData] = useState<DataStructure[]>([]);
-  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const meshRefT = useRef<THREE.InstancedMesh>(null);
+  const meshRefL = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const { nodes: nodes, materials: materials } = useGLTF("/models/tree.glb");
+  const { nodes: nodes, materials: materials } = useGLTF("/models/platano.glb");
 
   useEffect(() => {
     loadCSVData().then((data) => {
@@ -71,7 +72,7 @@ export function MapTrees({
   }, []);
 
   useFrame(() => {
-    if (!meshRef.current) return;
+    if (!meshRefT.current || !meshRefL.current) return;
 
     const time = performance.now() * animSpeed;
 
@@ -104,18 +105,24 @@ export function MapTrees({
       dummy.rotation.set(0, randomRotation, 0);
       dummy.updateMatrix();
 
-      meshRef.current!.setMatrixAt(index, dummy.matrix);
+      meshRefT.current!.setMatrixAt(index, dummy.matrix);
+      meshRefL.current!.setMatrixAt(index, dummy.matrix);
     });
 
-    meshRef.current.instanceMatrix.needsUpdate = true;
+    meshRefT.current.instanceMatrix.needsUpdate = true;
+    meshRefL.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <>
-      <instancedMesh
-        ref={meshRef}
-        args={[nodes.Tree.geometry, materials.Tree, origData.length]}
-      />
-    </>
+      <group>
+        <instancedMesh
+            ref={meshRefT}
+            args={[nodes.Tree.geometry, materials.Mat, origData.length]}
+        />
+        <instancedMesh
+            ref={meshRefL}
+            args={[nodes.Leafs.geometry, materials.Leafs, origData.length]}
+        />
+      </group>
   );
 }

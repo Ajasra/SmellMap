@@ -11,15 +11,18 @@ export function RoadMap( {mapScale }: { mapScale: number }) {
     texture.repeat.set(1, 1);
 
     return (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, .3, 0]}>
             <planeGeometry args={[mapScale, mapScale, 1024, 1024]} />
             <meshStandardMaterial
                 map={alphaMap}
-                // alphaMap={alphaMap}
+                alphaMap={alphaMap}
                 displacementMap={heightMap}
-                displacementScale={mapScale / 50}
+                displacementScale={mapScale /30}
                 transparent={true}
-                // side={THREE.DoubleSide}
+                side={THREE.DoubleSide}
+                alphaTest={0.1}
+                depthTest={true}
+                depthWrite={true}
             />
         </mesh>
     );

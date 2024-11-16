@@ -8,7 +8,7 @@ import { EffectComposer, DepthOfField } from '@react-three/postprocessing'
 import {Button} from "@mantine/core";
 import {PlayIcon} from "@radix-ui/react-icons";
 import {useEffect, useRef, useState} from "react";
-import {MapWater} from "../../map/water";
+import {MapRiver} from "../../map/water";
 import {MapGrass} from "../../map/grass";
 import {MapTrees} from "../../map/trees";
 import {MapBuildingsBg} from "../../map/buildings_bg";
@@ -20,6 +20,7 @@ import {MouseSphere} from "../../map/mouse";
 
 import * as THREE from 'three';
 import {TopRightCanvas} from "../ObjectCanvas";
+import {MapLake} from "../../map/water1";
 
 const scale = 30;
 const offset = [-scale/2, 0, scale/2]
@@ -61,7 +62,7 @@ export function MapScene() {
                     position={[0, 0, 10]}
                     ref={cameraRef}
                 />
-                {/*<fog attach="fog" color={backgroundCol} near={4} far={30}/>*/}
+                {/*<fog attach="fog" color={backgroundCol} near={15} far={30}/>*/}
                 <ambientLight intensity={0.5}/>
                 <directionalLight position={[10, 10, 5]} intensity={2}/>
                 <OrbitControls
@@ -69,7 +70,8 @@ export function MapScene() {
                 />
                 <RoadMap mapScale={scale} />
                 <group position={offset}>
-                    <MapWater mapScale={scale}/>
+                    <MapRiver mapScale={scale}/>
+                    <MapLake mapScale={scale}/>
                     <MapGrass mapScale={scale}/>
                     <MapTrees mapScale={scale} MP={MP}/>
                     <MapBuildingsBg mapScale={scale} MP={MP}/>

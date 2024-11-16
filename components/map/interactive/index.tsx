@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import {Modal, Image, Text, MantineProvider, Flex} from '@mantine/core';
 import {RadiantField} from "../../RadiantField";
+import {RadiantFieldGeo} from "../../RadiantFieldGeo";
 
 interface InteractiveObject {
     id: number;
@@ -70,7 +71,7 @@ export function MapInteractive({ mapScale, setActiveId, activeId }: { mapScale: 
                         <boxGeometry attach="geometry" args={[1, 1, 1]}/>
                         <meshStandardMaterial attach="material" color={clickedObjects[obj.id] ? 'hotpink' : 'orange'}/>
                     </mesh>
-                    <RadiantField position={[obj.x * mapScale, 1.1, -obj.y * mapScale]}/>
+                    <RadiantFieldGeo position={[obj.x * mapScale, 1.1, -obj.y * mapScale]} color={new THREE.Color(1,1,0)}/>
                 </>
 
             ))}

@@ -48,10 +48,9 @@ export function MapBuildingsBg({ mapScale, MP }: { mapScale: number, MP: THREE.V
     const dummy = useMemo(() => new THREE.Object3D(), []);
     const { nodes: nodes, materials: materials } = useGLTF('/models/building.glb');
 
-    // materials.concrete.side = THREE.DoubleSide;
+    materials.concrete.side = THREE.DoubleSide;
     // materials.concrete.depthTest = true;
     // materials.concrete.depthWrite = true;
-    // materials.concrete.transparent = true;
 
 
     useEffect(() => {
@@ -77,7 +76,7 @@ export function MapBuildingsBg({ mapScale, MP }: { mapScale: number, MP: THREE.V
                 scale = s - (1 - distance / animDistance) * s;
             }
 
-            dummy.position.set(tx * mapScale, (tz * mapScale * 1.1), -ty * mapScale);
+            dummy.position.set(tx * mapScale, (tz * mapScale) + .4, -ty * mapScale);
             dummy.scale.set(
                 particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
             dummy.updateMatrix();
