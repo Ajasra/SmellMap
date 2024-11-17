@@ -18,8 +18,8 @@ interface DataStructure {
   shape: number;
 }
 
-const particleSize = [0.1, 0.1, 0.1];
-const particleColor = "rgba(250, 200, 100, 1)";
+const particleSize = 1 / 20;
+const particleColor = "#9ba839";
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
@@ -64,15 +64,11 @@ export function MapGrass({ mapScale }: { mapScale: number }) {
       const tx = data.tx;
       const ty = data.ty;
       const tz = data.tz;
-      dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
       let scale =
         noise.perlin3(tx * mapScale, ty * mapScale, tz * mapScale) * 0.5 + 0.5;
-      scale = scale * 2;
-      dummy.scale.set(
-        particleSize[0] * scale,
-        particleSize[1] * scale,
-        particleSize[2] * scale,
-      );
+      scale = scale * 2 * particleSize;
+      dummy.scale.set(scale, scale, scale);
+      dummy.position.set(tx * mapScale, tz * mapScale + scale/2 + .1, -ty * mapScale);
       let randomRotation =
         noise.simplex2(tx * mapScale, ty * mapScale) * Math.PI;
       dummy.rotation.set(0, randomRotation, 0);
@@ -86,10 +82,19 @@ export function MapGrass({ mapScale }: { mapScale: number }) {
 
   return (
     <>
-      <instancedMesh
-        ref={meshRef}
-        args={[nodes.model.geometry, materials.mat, origData.length]}
-      />
+      {/*<instancedMesh*/}
+      {/*  ref={meshRef}*/}
+      {/*  args={[nodes.model.geometry, materials.mat, origData.length]}*/}
+      {/*/>*/}
+      <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
+        <sphereGeometry args={[1, 3, 2]} />
+        <meshStandardMaterial
+          color={particleColor}
+          flatShading={true}
+          // transparent={true}
+          // opacity={0.8}
+        />
+      </instancedMesh>
     </>
   );
 }

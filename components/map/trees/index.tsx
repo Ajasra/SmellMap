@@ -17,8 +17,8 @@ interface DataStructure {
   shape: number;
 }
 
-const particleSize = 1 / 500;
-const particleColor = "rgba(120, 255, 100, 1)";
+const particleSize = 1/3;
+const particleColor = "#adb459";
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
@@ -61,7 +61,7 @@ export function MapTrees({
 }) {
   const [origData, setOrigData] = useState<DataStructure[]>([]);
   const meshRefT = useRef<THREE.InstancedMesh>(null);
-  const meshRefL = useRef<THREE.InstancedMesh>(null);
+  // const meshRefL = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const { nodes: nodes, materials: materials } = useGLTF("/models/platano.glb");
 
@@ -72,8 +72,9 @@ export function MapTrees({
   }, []);
 
   useFrame(() => {
-    if (!meshRefT.current || !meshRefL.current) return;
+    // if (!meshRefT.current || !meshRefL.current) return;
 
+    if (!meshRefT.current) return;
     const time = performance.now() * animSpeed;
 
     origData.forEach((data, index) => {
@@ -83,7 +84,7 @@ export function MapTrees({
 
       const objectPosition = new THREE.Vector3(
         tx * mapScale,
-        tz * mapScale,
+        tz * mapScale ,
         -ty * mapScale,
       );
       const distance = MP.distanceTo(objectPosition);
@@ -98,7 +99,7 @@ export function MapTrees({
 
       scale = scale * particleSize;
 
-      dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
+      dummy.position.set(tx * mapScale, tz * mapScale + scale/2 + .1, -ty * mapScale);
       dummy.scale.set(scale, scale, scale);
       let randomRotation =
         noise.simplex2(tx * mapScale, ty * mapScale) * Math.PI;
@@ -106,23 +107,32 @@ export function MapTrees({
       dummy.updateMatrix();
 
       meshRefT.current!.setMatrixAt(index, dummy.matrix);
-      meshRefL.current!.setMatrixAt(index, dummy.matrix);
+      // meshRefL.current!.setMatrixAt(index, dummy.matrix);
     });
 
     meshRefT.current.instanceMatrix.needsUpdate = true;
-    meshRefL.current.instanceMatrix.needsUpdate = true;
+    // meshRefL.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
       <group>
-        <instancedMesh
-            ref={meshRefT}
-            args={[nodes.Tree.geometry, materials.Mat, origData.length]}
-        />
-        <instancedMesh
-            ref={meshRefL}
-            args={[nodes.Leafs.geometry, materials.Leafs, origData.length]}
-        />
+        <instancedMesh ref={meshRefT} args={[null, null, origData.length]}>
+          <sphereGeometry args={[1, 3, 2]}/>
+          <meshStandardMaterial
+              color={particleColor}
+              flatShading={true}
+              // transparent={true}
+              // opacity={0.8}
+          />
+        </instancedMesh>
+          {/*<instancedMesh*/}
+          {/*    ref={meshRefT}*/}
+          {/*    args={[nodes.Tree.geometry, materials.Mat, origData.length]}*/}
+          {/*/>*/}
+          {/*<instancedMesh*/}
+          {/*    ref={meshRefL}*/}
+          {/*    args={[nodes.Leafs.geometry, materials.Leafs, origData.length]}*/}
+          {/*/>*/}
       </group>
-  );
+);
 }

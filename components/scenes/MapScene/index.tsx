@@ -21,6 +21,7 @@ import {MouseSphere} from "../../map/mouse";
 import * as THREE from 'three';
 import {TopRightCanvas} from "../ObjectCanvas";
 import {MapLake} from "../../map/water1";
+import {SubwayPath} from "../../map/subway";
 
 const scale = 30;
 const offset = [-scale/2, 0, scale/2]
@@ -79,9 +80,10 @@ export function MapScene() {
                     {/*<MapHighway mapScale={scale}/>*/}
                     <MapInteractive mapScale={scale}  setActiveId={setActiveId} activeId={activeId}/>
                     <MouseSphere mapScale={scale} setMP={setMP}/>
+                    <SubwayPath mapScale={scale} MP={MP} />
                 </group>
 
-                <axesHelper args={[5]}/>
+                {/*<axesHelper args={[5]}/>*/}
                 {/*<EffectComposer autoClear={false}>*/}
                 {/*    <DepthOfField focusDistance={1} focalLength={.1} bokehScale={20} />*/}
                 {/*</EffectComposer>*/}

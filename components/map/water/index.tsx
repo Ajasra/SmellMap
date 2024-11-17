@@ -17,7 +17,7 @@ interface DataStructure {
   shape: number;
 }
 
-const particleSize = [0.05, 0.05, 0.05];
+const particleSize = .1;
 const particleColor = '#92b8b3';
 const animSpeed = 0.003;
 const animPower = 0.004;
@@ -65,7 +65,8 @@ export function MapRiver({mapScale}: { mapScale: number }) {
 
       dummy.position.set(tx * mapScale, tz * mapScale, -ty * mapScale);
       let scale = noise.perlin3(tx * animScale, ty * animScale, tz * animScale + time * animSpeed) * 0.5 + 0.5;
-      dummy.scale.set(particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
+      scale = scale * particleSize;
+      dummy.scale.set(scale, scale, scale);
 
       dummy.updateMatrix();
 
@@ -76,13 +77,14 @@ export function MapRiver({mapScale}: { mapScale: number }) {
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-      <sphereGeometry args={[1, 5, 5]} />
-      <meshStandardMaterial
-          color={particleColor}
-          transparent={true}
-          opacity={0.8}
-      />
-    </instancedMesh>
+      <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
+        <sphereGeometry args={[1, 3, 2]}/>
+        <meshStandardMaterial
+            color={particleColor}
+            flatShading={true}
+            // transparent={true}
+            // opacity={0.8}
+        />
+      </instancedMesh>
   );
 }

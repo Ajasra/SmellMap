@@ -17,8 +17,8 @@ interface DataStructure {
   shape: number;
 }
 
-const particleSize = [0.05, 0.05, 0.05];
-const particleColor = '#b8f0ed';
+const particleSize = .1;
+const particleColor = '#91d0dc';
 const animSpeed = 0.005;
 const animPower = 0.004;
 const animScale = 200;
@@ -65,8 +65,8 @@ export function MapLake({mapScale}: { mapScale: number }) {
 
       dummy.position.set(tx * mapScale, tz * mapScale * .3, -ty * mapScale);
       let scale = noise.perlin3(tx * animScale, ty * animScale, tz * animScale + time * animSpeed) * 0.5 + 0.5;
-      dummy.scale.set(particleSize[0] * scale, particleSize[1] * scale, particleSize[2] * scale);
-
+      scale = scale * particleSize;
+      dummy.scale.set(scale, scale, scale);
       dummy.updateMatrix();
 
       meshRef.current.setMatrixAt(index, dummy.matrix);
@@ -77,11 +77,12 @@ export function MapLake({mapScale}: { mapScale: number }) {
 
   return (
     <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-      <sphereGeometry args={[1, 5, 5]} />
+      <sphereGeometry args={[1, 3, 2]} />
       <meshStandardMaterial
           color={particleColor}
-          transparent={true}
-          opacity={0.8}
+          flatShading={true}
+          // transparent={true}
+          // opacity={0.8}
       />
     </instancedMesh>
   );
