@@ -18,7 +18,7 @@ interface DataStructure {
 }
 
 const particleSize = .1;
-const particleColor = '#91d0dc';
+const particleColor = '#daecf5';
 const animSpeed = 0.005;
 const animPower = 0.004;
 const animScale = 200;
@@ -77,7 +77,7 @@ export function MapLake({mapScale}: { mapScale: number }) {
 
   return (
     <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-      <sphereGeometry args={[1, 3, 2]} />
+      <sphereGeometry args={[1, 6, 6]} />
       <meshStandardMaterial
           color={particleColor}
           flatShading={true}

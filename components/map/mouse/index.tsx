@@ -57,8 +57,8 @@ export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos
 
     return (
         <mesh ref={sphereRef} position={[0, 1, 0]}>
-            <sphereGeometry args={[0.1, 32, 32]} />
-            <meshBasicMaterial color="red" />
+            <sphereGeometry args={[0.1, 3, 2]} />
+            <meshStandardMaterial color="#713e83" flatShading={true} />
         </mesh>
     );
 }

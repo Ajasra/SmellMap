@@ -19,7 +19,7 @@ interface DataStructure {
 }
 
 const particleSize = 1 / 20;
-const particleColor = "#9ba839";
+const particleColor = "#bbc4b4";
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
@@ -87,7 +87,7 @@ export function MapGrass({ mapScale }: { mapScale: number }) {
       {/*  args={[nodes.model.geometry, materials.mat, origData.length]}*/}
       {/*/>*/}
       <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-        <sphereGeometry args={[1, 3, 2]} />
+        <sphereGeometry args={[1, 5, 5]} />
         <meshStandardMaterial
           color={particleColor}
           flatShading={true}

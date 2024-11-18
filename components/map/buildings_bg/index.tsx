@@ -19,7 +19,7 @@ interface DataStructure {
 
 const particleSize = 1 / 5;
 const animSpeed = 0.003;
-const particleColor = "#898b6c";
+const particleColor = "#d5d6d6";
 const animDistance = 1;
 const dataFile = "/data/buildings.csv";
 const noise = new Noise(Math.random());
@@ -100,7 +100,7 @@ export function MapBuildingsBg({
         -ty * mapScale,
       );
       dummy.scale.set(scale, scale * s, scale);
-      dummy.rotation.set(0, Math.PI / 4, 0);
+      // dummy.rotation.set(0, Math.PI / 4, 0);
       dummy.updateMatrix();
 
       meshRef.current.setMatrixAt(index, dummy.matrix);
@@ -111,7 +111,7 @@ export function MapBuildingsBg({
 
   return (
     <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-      <sphereGeometry args={[1, 4, 3]} />
+      <boxGeometry  />
       <meshPhongMaterial color={particleColor} flatShading={true} shininess={100} reflectivity={1} envMap={envMap} />
     </instancedMesh>
   );

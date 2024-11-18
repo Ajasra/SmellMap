@@ -5,7 +5,7 @@ export default function IndexPage() {
   const router = useRouter();
 
   const handleGoToIntro = () => {
-    router.push('/intro');
+    router.push('/chicago');
   };
 
   return (

@@ -18,7 +18,7 @@ interface DataStructure {
 }
 
 const particleSize = 1/3;
-const particleColor = "#adb459";
+const particleColor = "#bbc4b4";
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
@@ -117,7 +117,7 @@ export function MapTrees({
   return (
       <group>
         <instancedMesh ref={meshRefT} args={[null, null, origData.length]}>
-          <sphereGeometry args={[1, 3, 2]}/>
+          <sphereGeometry args={[1, 6, 6]}/>
           <meshStandardMaterial
               color={particleColor}
               flatShading={true}

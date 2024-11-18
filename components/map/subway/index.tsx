@@ -9,15 +9,16 @@ interface DataStructure {
     tx: number;
     ty: number;
     tz: number;
+    r: number;
+    g: number;
+    b: number;
 }
 
-const particleSize = .2;
-const particleColor = '#ea9c4e';
+const particleSize = .03;
 const animSpeed = 0.005;
-const animPower = 0.004;
 const animScale = 200;
 
-const dataFile = '/data/subway/2.csv';
+const dataFile = '/data/subway.csv';
 
 const noise = new Noise(Math.random());
 
@@ -37,49 +38,103 @@ function loadCSVData() {
         });
 }
 
-export function SubwayPath({mapScale}: { mapScale: number }) {
-    const [origData, setOrigData] = useState<DataStructure[]>([]);
+function groupDataByColor(data: DataStructure[]) {
+    const groups: DataStructure[][] = [];
+    let currentGroup: DataStructure[] = [];
+
+    data.forEach((item, index) => {
+        if (index === 0 || (item.r === data[index - 1].r && item.g === data[index - 1].g && item.b === data[index - 1].b)) {
+            currentGroup.push(item);
+        } else {
+            groups.push(currentGroup);
+            currentGroup = [];
+            currentGroup.push(item);
+        }
+    });
+
+    return groups;
+}
+
+function extractColors(data: DataStructure[][]) {
+    const colors: string[] = [];
+
+    data.forEach((item, index  ) => {
+        let r = (item[0].r * 255).toFixed(0);
+        let g = (item[0].g * 255).toFixed(0);
+        let b = (item[0].b * 255).toFixed(0);
+        colors.push(`rgb(${r}, ${g}, ${b})`);
+    });
+
+    return colors;
+
+}
+
+function SubwayLine({ data, mapScale, color }: { data: DataStructure[], mapScale: number, color: string }) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const dummy = useMemo(() => new THREE.Object3D(), []);
-
-    useEffect(() => {
-        loadCSVData().then((data) => {
-            setOrigData(data);
-        });
-    }, []);
+    const [progress, setProgress] = useState(0);
 
     useFrame(() => {
         if (!meshRef.current) return;
 
         const time = performance.now() * animSpeed;
-        origData.forEach((data, index) => {
-            const tx = data.tx;
-            const ty = data.ty;
-            const tz = data.tz;
 
-            dummy.position.set(tx * mapScale, tz * mapScale + 2, -ty * mapScale);
+        setProgress(((time) % data.length));
+        data.forEach((item, index) => {
+            const tx = item.tx;
+            const ty = item.ty;
+            const tz = item.tz;
+
+            dummy.position.set(tx * mapScale, tz * mapScale / 2 + 1, -ty * mapScale);
             let scale = noise.perlin3(tx * animScale, ty * animScale, tz * animScale + time * animSpeed) * 0.5 + 0.5;
-            scale = particleSize;
+            scale = particleSize ;
+            // if(index > progress) {
+            //     scale = scale * 3;
+            // }
             dummy.scale.set(scale, scale, scale);
             dummy.updateMatrix();
 
             meshRef.current.setMatrixAt(index, dummy.matrix);
         });
 
-        meshRef.current.instanceMatrix.needsUpdate = true;
     });
 
-    console.log(origData);
-
     return (
-        <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
+        <instancedMesh ref={meshRef} args={[null, null, data.length]}>
             <sphereGeometry args={[1, 3, 2]} />
             <meshStandardMaterial
-                color={particleColor}
                 flatShading={true}
-                // transparent={true}
-                // opacity={0.8}
+                color={color}
             />
         </instancedMesh>
     );
+}
+
+
+export function SubwayPath({ mapScale }: { mapScale: number }) {
+    const [groupedData, setGroupedData] = useState<DataStructure[][]>([]);
+    const [colorMap, setColorMap] = useState<string[]>([]);
+
+    useEffect(() => {
+        loadCSVData().then((data) => {
+            const grouped = groupDataByColor(data);
+            setGroupedData(grouped);
+
+            const colors = extractColors(grouped);
+            setColorMap(colors);
+        });
+    }, []);
+
+   return (
+    <>
+        {groupedData.map((group, index) => {
+            if (group.length > 0) {
+                return (
+                    <SubwayLine key={index} data={group} mapScale={mapScale} color={colorMap[index]} />
+                );
+            }
+            return null;
+        })}
+    </>
+);
 }
