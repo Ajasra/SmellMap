@@ -72,14 +72,15 @@ function extractColors(data: DataStructure[][]) {
 function SubwayLine({ data, mapScale, color }: { data: DataStructure[], mapScale: number, color: string }) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
     const dummy = useMemo(() => new THREE.Object3D(), []);
-    const [progress, setProgress] = useState(0);
+    const [progress, setProgress] = useState(1);
 
     useFrame(() => {
         if (!meshRef.current) return;
 
         const time = performance.now() * animSpeed;
 
-        setProgress(((time) % data.length));
+        // setProgress((time % data.length).toFixed(0));
+        console.log(progress);
         data.forEach((item, index) => {
             const tx = item.tx;
             const ty = item.ty;
@@ -87,15 +88,18 @@ function SubwayLine({ data, mapScale, color }: { data: DataStructure[], mapScale
 
             dummy.position.set(tx * mapScale, tz * mapScale / 2 + 1, -ty * mapScale);
             let scale = noise.perlin3(tx * animScale, ty * animScale, tz * animScale + time * animSpeed) * 0.5 + 0.5;
-            scale = particleSize ;
-            // if(index > progress) {
-            //     scale = scale * 3;
+            scale = particleSize;
+
+            // if(index > progress ) {
+            //     scale = scale * 5;
             // }
             dummy.scale.set(scale, scale, scale);
-            dummy.updateMatrix();
 
+            dummy.updateMatrix();
             meshRef.current.setMatrixAt(index, dummy.matrix);
         });
+
+        meshRef.current.instanceMatrix.needsUpdate = true;
 
     });
 

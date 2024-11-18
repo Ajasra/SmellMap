@@ -34,7 +34,7 @@ export function MouseSphere({ mapScale, setMP }: { mapScale: number, setMP: (pos
     }, []);
 
     useEffect(() => {
-        setMP(mousePos);
+        // setMP(mousePos);
     }, [mousePos]);
 
     useFrame(({ camera }) => {

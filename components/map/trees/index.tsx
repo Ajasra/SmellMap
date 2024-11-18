@@ -98,6 +98,7 @@ export function MapTrees({
       }
 
       scale = scale * particleSize;
+      if(index <  2600) scale = scale / 5;
 
       dummy.position.set(tx * mapScale, tz * mapScale + scale/2 + .1, -ty * mapScale);
       dummy.scale.set(scale, scale, scale);

@@ -43,6 +43,7 @@ export function MapScene() {
         // alert(activeId)
     },[activeId])
 
+    console.log("MapScene")
 
     return (
         <div className={css.container}>
@@ -73,13 +74,12 @@ export function MapScene() {
                 <group position={offset}>
                     <MapRiver mapScale={scale}/>
                     <MapLake mapScale={scale}/>
-                    <MapGrass mapScale={scale}/>
                     <MapTrees mapScale={scale} MP={MP}/>
                     <MapBuildingsBg mapScale={scale} MP={MP}/>
                     {/*<MapRoads mapScale={scale}/>*/}
                     {/*<MapHighway mapScale={scale}/>*/}
                     <MapInteractive mapScale={scale}  setActiveId={setActiveId} activeId={activeId}/>
-                    <MouseSphere mapScale={scale} setMP={setMP}/>
+                    <MouseSphere mapScale={scale}/>
                     <SubwayPath mapScale={scale} MP={MP} />
                 </group>
 
