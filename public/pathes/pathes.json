@@ -4,38 +4,41 @@
     "title": "Path 1",
     "description": "Description for Path 1",
     "modelFile": "path/to/model1.glb",
-    "points": 10,
+    "points": 9,
     "position": {
       "x": 1,
       "y": 1,
       "z": 1
     },
-    "color": "#ff0000"
+    "color": "#0085b8",
+    "colorArrow": "#bad2df"
   },
   {
     "id": 2,
     "title": "Path 2",
     "description": "Description for Path 2",
     "modelFile": "path/to/model2.glb",
-    "points": 10,
+    "points": 9,
     "position": {
       "x": -1,
       "y": -1,
       "z": -1
     },
-    "color": "#00ff00"
+    "color": "#0085b8",
+    "colorArrow": "#bad2df"
   },
   {
     "id": 3,
     "title": "Path 3",
     "description": "Description for Path 3",
     "modelFile": "path/to/model3.glb",
-    "points": 10,
+    "points": 9,
     "position": {
       "x": 2,
       "y": -2,
       "z": 2
     },
-    "color": "#0000ff"
+    "color": "#0000ff",
+    "colorArrow": "#bad2df"
   }
 ]

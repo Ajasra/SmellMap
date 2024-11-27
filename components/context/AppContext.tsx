@@ -15,6 +15,7 @@ interface Path {
   modelFile: string;
   points: number;
   color: string;
+  colorArrow: string;
 }
 
 interface InteractiveObject {
@@ -38,6 +39,7 @@ interface AppState {
   volume: number;
   isLoaded: boolean;
   isDebug: boolean;
+  pathData: { pathData: []; pointsData: [] };
 }
 
 type Action =
@@ -49,7 +51,8 @@ type Action =
   | { type: "SET_PATHES"; payload: Path[] }
   | { type: "SET_VOLUME"; payload: number }
   | { type: "SET_IS_LOADED"; payload: boolean }
-  | { type: "SET_INTERACTIVE"; payload: InteractiveObject[] };
+  | { type: "SET_INTERACTIVE"; payload: InteractiveObject[] }
+  | { type: "SET_PATH_DATA"; payload: { pathData: []; pointsData: [] } };
 
 const initialState: AppState = {
   MP: new THREE.Vector3(),
@@ -62,6 +65,7 @@ const initialState: AppState = {
   isLoaded: false,
   isDebug: true,
   interactiveObjects: [],
+  pathData: { pathData: [], pointsData: [] },
 };
 
 const reducer = (state: AppState, action: Action): AppState => {
@@ -84,6 +88,8 @@ const reducer = (state: AppState, action: Action): AppState => {
       return { ...state, isLoaded: action.payload };
     case "SET_INTERACTIVE":
       return { ...state, interactiveObjects: action.payload };
+    case "SET_PATH_DATA":
+      return { ...state, pathData: action.payload };
     default:
       return state;
   }
@@ -124,9 +130,56 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     return () => {
       dispatch({ type: "SET_PATHES", payload: [] });
-      dispatch({type: "SET_INTERACTIVE", payload: []})
+      dispatch({ type: "SET_INTERACTIVE", payload: [] });
     };
   }, []);
+
+  useEffect(() => {
+    const loadPathData = async () => {
+      const processCSV = (text: string) => {
+        return text
+          .replace(/\r/g, "") // Remove \r characters
+          .split("\n")
+          .slice(1) // Ignore the first row (titles)
+          .map((row) => row.split(","))
+          .filter(
+            (row) => row.length > 1 && row.some((cell) => cell.trim() !== ""),
+          ) // Remove empty rows
+          .map((row) => ({
+            x: parseFloat(row[0]),
+            y: parseFloat(row[1]),
+            z: parseFloat(row[2]),
+          }));
+      };
+
+      let pathData = [];
+      let pointsData = [];
+
+      try {
+        const pathResponse = await fetch(`/pathes/${state.pathId}/path.csv`);
+        if (!pathResponse.ok) throw new Error("Path file not found");
+        const pathText = await pathResponse.text();
+        pathData = processCSV(pathText);
+      } catch {
+        pathData = [];
+      }
+
+      try {
+        const pointsResponse = await fetch(
+          `/pathes/${state.pathId}/points.csv`,
+        );
+        if (!pointsResponse.ok) throw new Error("Points file not found");
+        const pointsText = await pointsResponse.text();
+        pointsData = processCSV(pointsText);
+      } catch {
+        pointsData = [];
+      }
+
+      dispatch({ type: "SET_PATH_DATA", payload: { pathData, pointsData } });
+    };
+
+    loadPathData();
+  }, [state.pathId]);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
