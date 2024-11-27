@@ -18,6 +18,7 @@ import { MapLake } from "../../map/water1";
 import { SubwayPath } from "../../map/subway";
 import { useAppContext } from "../../context/AppContext";
 import { Vector3 } from "three";
+import { Patches } from "../../map/patches";
 
 const scale = 30;
 const offset = new Vector3(-scale / 2, 0, scale / 2);
@@ -66,6 +67,7 @@ export function MapScene() {
           <MapInteractive mapScale={scale} />
           <MouseSphere mapScale={scale} />
           <SubwayPath mapScale={scale} />
+          <Patches mapScale={scale} />
         </group>
       </Canvas>
       <TopRightCanvas />
