@@ -3,7 +3,8 @@ import { extend, useFrame, useLoader, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import Papa from "papaparse";
 import { Noise } from "noisejs";
-import { useGLTF } from "@react-three/drei";
+
+const MP = new THREE.Vector3();
 
 interface DataStructure {
   tx: number;
@@ -40,37 +41,16 @@ function loadCSVData() {
     });
 }
 
-export function MapBuildingsBg({
-  mapScale,
-  MP,
-}: {
-  mapScale: number;
-  MP: THREE.Vector3;
-}) {
+export function MapBuildingsBg({ mapScale }: { mapScale: number }) {
   const [origData, setOrigData] = useState<DataStructure[]>([]);
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  // const { nodes: nodes, materials: materials } = useGLTF(
-  //   "/models/building.glb",
-  // );
-  const { scene } = useThree();
-  const [envMap, setEnvMap] = useState<THREE.Texture | null>(null);
-
-
 
   useEffect(() => {
     loadCSVData().then((data) => {
       setOrigData(data);
     });
-
-    const loader = new THREE.TextureLoader();
-    loader.load('public/textures/env.jpg', (texture) => {
-      const envMap = new THREE.WebGLCubeRenderTarget(texture.image.height).fromEquirectangularTexture(scene.renderer, texture);
-      setEnvMap(envMap.texture);
-      scene.environment = envMap.texture;
-    });
-
-  }, [scene]);
+  }, []);
 
   useFrame(() => {
     if (!meshRef.current) return;
@@ -100,7 +80,6 @@ export function MapBuildingsBg({
         -ty * mapScale,
       );
       dummy.scale.set(scale, scale * s, scale);
-      // dummy.rotation.set(0, Math.PI / 4, 0);
       dummy.updateMatrix();
 
       meshRef.current.setMatrixAt(index, dummy.matrix);
@@ -111,8 +90,13 @@ export function MapBuildingsBg({
 
   return (
     <instancedMesh ref={meshRef} args={[null, null, origData.length]}>
-      <boxGeometry  />
-      <meshPhongMaterial color={particleColor} flatShading={true} shininess={100} reflectivity={1} envMap={envMap} />
+      <boxGeometry />
+      <meshPhongMaterial
+        color={particleColor}
+        flatShading={true}
+        shininess={100}
+        reflectivity={1}
+      />
     </instancedMesh>
   );
 }

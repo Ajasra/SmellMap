@@ -1,10 +1,11 @@
-import {MapScene} from "../components/scenes/MapScene";
-
+import { MapScene } from "../components/scenes/MapScene";
+import VideoPlayer from "../components/VideoPlayer";
 
 export default function MapPage() {
-    return (
-        <main>
-            <MapScene/>
-        </main>
-    );
+  return (
+    <main>
+      <VideoPlayer />
+      <MapScene />
+    </main>
+  );
 }

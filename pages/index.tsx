@@ -1,4 +1,3 @@
-import { Button, Group } from "@mantine/core";
 import { useRouter } from 'next/router';
 
 export default function IndexPage() {
@@ -9,8 +8,19 @@ export default function IndexPage() {
   };
 
   return (
-    <Group mt={50} justify="center">
-      <Button size="xl" onClick={handleGoToIntro}>Welcome to Mantine!</Button>
-    </Group>
+    <div
+      onClick={handleGoToIntro}
+      style={{
+        backgroundImage: 'url(/intro.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
+        cursor: 'pointer', // Add this line to change the cursor
+      }}
+    >
+    </div>
   );
 }

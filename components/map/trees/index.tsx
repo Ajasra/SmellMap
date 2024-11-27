@@ -17,7 +17,7 @@ interface DataStructure {
   shape: number;
 }
 
-const particleSize = 1/3;
+const particleSize = 1 / 3;
 const particleColor = "#bbc4b4";
 const animSpeed = 0.003;
 const animPower = 0.004;
@@ -27,6 +27,8 @@ const animDistance = 1;
 const dataFile = "/data/trees.csv";
 
 const noise = new Noise(Math.random());
+
+const MP = new THREE.Vector3();
 
 function loadCSVData() {
   return fetch(dataFile)
@@ -52,13 +54,7 @@ function splitData(data: DataStructure[]): [DataStructure[], DataStructure[]] {
   return [firstSet, secondSet];
 }
 
-export function MapTrees({
-  mapScale,
-  MP,
-}: {
-  mapScale: number;
-  MP: THREE.Vector3;
-}) {
+export function MapTrees({ mapScale }: { mapScale: number }) {
   const [origData, setOrigData] = useState<DataStructure[]>([]);
   const meshRefT = useRef<THREE.InstancedMesh>(null);
   // const meshRefL = useRef<THREE.InstancedMesh>(null);
@@ -84,7 +80,7 @@ export function MapTrees({
 
       const objectPosition = new THREE.Vector3(
         tx * mapScale,
-        tz * mapScale ,
+        tz * mapScale,
         -ty * mapScale,
       );
       const distance = MP.distanceTo(objectPosition);
@@ -98,9 +94,13 @@ export function MapTrees({
       }
 
       scale = scale * particleSize;
-      if(index <  2600) scale = scale / 5;
+      if (index < 2600) scale = scale / 5;
 
-      dummy.position.set(tx * mapScale, tz * mapScale + scale/2 + .1, -ty * mapScale);
+      dummy.position.set(
+        tx * mapScale,
+        tz * mapScale + scale / 2 + 0.1,
+        -ty * mapScale,
+      );
       dummy.scale.set(scale, scale, scale);
       let randomRotation =
         noise.simplex2(tx * mapScale, ty * mapScale) * Math.PI;
@@ -116,24 +116,24 @@ export function MapTrees({
   });
 
   return (
-      <group>
-        <instancedMesh ref={meshRefT} args={[null, null, origData.length]}>
-          <sphereGeometry args={[1, 6, 6]}/>
-          <meshStandardMaterial
-              color={particleColor}
-              flatShading={true}
-              // transparent={true}
-              // opacity={0.8}
-          />
-        </instancedMesh>
-          {/*<instancedMesh*/}
-          {/*    ref={meshRefT}*/}
-          {/*    args={[nodes.Tree.geometry, materials.Mat, origData.length]}*/}
-          {/*/>*/}
-          {/*<instancedMesh*/}
-          {/*    ref={meshRefL}*/}
-          {/*    args={[nodes.Leafs.geometry, materials.Leafs, origData.length]}*/}
-          {/*/>*/}
-      </group>
-);
+    <group>
+      <instancedMesh ref={meshRefT} args={[null, null, origData.length]}>
+        <sphereGeometry args={[1, 6, 6]} />
+        <meshStandardMaterial
+          color={particleColor}
+          flatShading={true}
+          // transparent={true}
+          // opacity={0.8}
+        />
+      </instancedMesh>
+      {/*<instancedMesh*/}
+      {/*    ref={meshRefT}*/}
+      {/*    args={[nodes.Tree.geometry, materials.Mat, origData.length]}*/}
+      {/*/>*/}
+      {/*<instancedMesh*/}
+      {/*    ref={meshRefL}*/}
+      {/*    args={[nodes.Leafs.geometry, materials.Leafs, origData.length]}*/}
+      {/*/>*/}
+    </group>
+  );
 }

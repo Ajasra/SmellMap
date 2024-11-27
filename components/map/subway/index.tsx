@@ -80,7 +80,7 @@ function SubwayLine({ data, mapScale, color }: { data: DataStructure[], mapScale
         const time = performance.now() * animSpeed;
 
         // setProgress((time % data.length).toFixed(0));
-        console.log(progress);
+        // console.log(progress);
         data.forEach((item, index) => {
             const tx = item.tx;
             const ty = item.ty;
