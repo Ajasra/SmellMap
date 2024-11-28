@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { useAppContext } from "../../context/AppContext";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RadiantFieldGeo } from "../../objects/RadiantFieldGeo";
 import { MeshLine } from "three.meshline";
 import "../../objects/MeshLine/index.ts";
@@ -11,6 +11,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   const [hoveredObject, setHoveredObject] = useState(null);
   const { MP, pathData, chapterId, pathes, pathId } = state;
   const lineRef = useRef<THREE.Mesh>(null);
+  const [color, setColor] = useState(new THREE.Color(0x000000));
 
   useEffect(() => {
     let actPath = pathes.find((path) => path.id === pathId);
@@ -35,10 +36,17 @@ export function Patches({ mapScale }: { mapScale: number }) {
     }
   }, [pathData.pathData, mapScale]);
 
+  useEffect(() => {
+    if (activePatch) {
+      setColor(new THREE.Color(activePatch.color));
+    }
+  }, [activePatch]);
+
   function updateChapterId(chapterId: number) {
     dispatch({ type: "SET_CHAPTER_ID", payload: chapterId });
   }
 
+  // @ts-ignore
   return (
     <>
       {activePatch &&
@@ -58,7 +66,6 @@ export function Patches({ mapScale }: { mapScale: number }) {
                   scale={isHovered ? 1.5: 1}
                   onPointerOver={() => setHoveredObject(index)}
                   onPointerOut={() => setHoveredObject(null)}
-
               >
                 <coneGeometry attach="geometry" args={[0.5, 0.5, 3]} />
                 <meshStandardMaterial
@@ -69,7 +76,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
               {isHighlighted && (
                 <RadiantFieldGeo
                   position={[0, 0, 0]}
-                  color={new THREE.Color(activePatch.color)}
+                  color={color}
                 />
               )}
             </group>
@@ -79,7 +86,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
         <mesh ref={lineRef}>
           <meshLineMaterial
             attach="material"
-            color={new THREE.Color(activePatch.color)}
+            color={color}
             lineWidth={0.03}
           />
         </mesh>

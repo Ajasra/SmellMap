@@ -37,7 +37,6 @@ export function MapScene() {
     dispatch({ type: "SET_IS_LOADED", payload: true });
   };
 
-  console.log("MapScene");
 
   return (
     <div className={css.container}>
