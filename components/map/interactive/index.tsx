@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { Html } from "@react-three/drei";
-import { RadiantFieldGeo } from "../../RadiantFieldGeo";
+import { RadiantFieldGeo } from "../../objects/RadiantFieldGeo";
 import ModalWindow from "./modalWindow";
 import { useAppContext } from "../../context/AppContext";
 

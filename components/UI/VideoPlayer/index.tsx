@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 // @ts-ignore
 import css from "./VideoPlayer.module.css";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../../context/AppContext";
 
 const VideoPlayer = () => {
   const videoRef = useRef<HTMLVideoElement>(null);

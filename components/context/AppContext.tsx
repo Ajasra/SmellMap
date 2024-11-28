@@ -57,8 +57,8 @@ type Action =
 const initialState: AppState = {
   MP: new THREE.Vector3(),
   menu: "path",
-  pathId: 1,
-  chapterId: 1,
+  pathId: 0,
+  chapterId: 0,
   lastActive: new Date(),
   pathes: [],
   volume: 0.5,
@@ -179,6 +179,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadPathData();
+    dispatch({ type: "SET_CHAPTER_ID", payload: 1 });
   }, [state.pathId]);
 
   return (

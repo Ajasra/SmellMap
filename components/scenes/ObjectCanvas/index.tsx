@@ -1,7 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { StatueModel } from "../../map/statue";
-import { SculptureInteractive } from "../../map/sculptureInt";
+import { StatueModel } from "../../objects/statue";
+import { SculptureInteractive } from "../../objects/sculptureInt";
 
 export function TopRightCanvas() {
   return (
@@ -19,7 +19,7 @@ export function TopRightCanvas() {
     >
       <ambientLight intensity={0.8} />
       <directionalLight position={[2, 2, 2]} intensity={2} />
-      <OrbitControls maxPolarAngle={Math.PI / 2 - Math.PI / 12} />
+      <OrbitControls enableZoom={false} enablePan={false} />
       <StatueModel />
       <SculptureInteractive />
     </Canvas>

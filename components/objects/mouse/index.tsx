@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
+import { useAppContext } from "../../context/AppContext";
 
 export function MouseSphere({ mapScale }: { mapScale: number }) {
   const [mousePosition, setMousePosition] = useState(new THREE.Vector2());
   const sphereRef = useRef<THREE.Mesh>(null);
   const [mousePos, setMousePos] = useState(new THREE.Vector3());
+
+  const { state, dispatch } = useAppContext();
+  const { MP } = state;
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -38,7 +42,7 @@ export function MouseSphere({ mapScale }: { mapScale: number }) {
   }, []);
 
   useEffect(() => {
-    // setMP(mousePos);
+    dispatch({ type: "SET_MP", payload: mousePos });
   }, [mousePos]);
 
   useFrame(({ camera }) => {

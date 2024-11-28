@@ -4,6 +4,8 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Papa from "papaparse";
 import { Noise } from "noisejs";
+import { useAppContext } from "../../../context/AppContext";
+import { pow2 } from "three/examples/jsm/nodes/math/MathNode";
 
 interface DataStructure {
   tx: number;
@@ -22,13 +24,25 @@ const particleColor = "#bbc4b4";
 const animSpeed = 0.003;
 const animPower = 0.004;
 const animScale = 50;
-const animDistance = 1;
+const animDistance = 1.5;
 
 const dataFile = "/data/trees.csv";
 
 const noise = new Noise(Math.random());
 
-const MP = new THREE.Vector3();
+function mapValuePow(
+  value: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number,
+  pow: number,
+) {
+  return (
+    Math.pow((value - inMin) / (inMax - inMin), pow) * (outMax - outMin) +
+    outMin
+  );
+}
 
 function loadCSVData() {
   return fetch(dataFile)
@@ -61,6 +75,9 @@ export function MapTrees({ mapScale }: { mapScale: number }) {
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const { nodes: nodes, materials: materials } = useGLTF("/models/platano.glb");
 
+  const { state, dispatch } = useAppContext();
+  const { MP } = state;
+
   useEffect(() => {
     loadCSVData().then((data) => {
       setOrigData(data);
@@ -90,7 +107,11 @@ export function MapTrees({ mapScale }: { mapScale: number }) {
       scale = Math.abs(scale);
 
       if (distance < animDistance) {
-        scale = scale - (1 - distance / animDistance) * scale;
+        scale = scale * mapValuePow(distance, 0, animDistance, 0.05, 1.2, 2);
+      } else if (distance < animDistance * 1.5) {
+        scale =
+          scale *
+          mapValuePow(distance, animDistance, animDistance * 1.5, 1.2, 1, 2);
       }
 
       scale = scale * particleSize;
