@@ -34,11 +34,12 @@ interface AppState {
   pathId: number;
   chapterId: number;
   lastActive: Date;
-  pathes: Path[];
-  interactiveObjects: InteractiveObject[];
   volume: number;
   isLoaded: boolean;
   isDebug: boolean;
+  isPlaying: boolean;
+  pathes: Path[];
+  interactiveObjects: InteractiveObject[];
   pathData: { pathData: []; pointsData: [] };
 }
 
@@ -52,12 +53,13 @@ type Action =
   | { type: "SET_VOLUME"; payload: number }
   | { type: "SET_IS_LOADED"; payload: boolean }
   | { type: "SET_INTERACTIVE"; payload: InteractiveObject[] }
-  | { type: "SET_PATH_DATA"; payload: { pathData: []; pointsData: [] } };
+  | { type: "SET_PATH_DATA"; payload: { pathData: []; pointsData: [] } }
+  | { type: "SET_IS_PLAYING"; payload: boolean };
 
 const initialState: AppState = {
   MP: new THREE.Vector3(),
   menu: "path",
-  pathId: 0,
+  pathId: 1,
   chapterId: 0,
   lastActive: new Date(),
   pathes: [],
@@ -66,6 +68,7 @@ const initialState: AppState = {
   isDebug: true,
   interactiveObjects: [],
   pathData: { pathData: [], pointsData: [] },
+  isPlaying: false,
 };
 
 const reducer = (state: AppState, action: Action): AppState => {
@@ -90,6 +93,8 @@ const reducer = (state: AppState, action: Action): AppState => {
       return { ...state, interactiveObjects: action.payload };
     case "SET_PATH_DATA":
       return { ...state, pathData: action.payload };
+    case "SET_IS_PLAYING":
+      return { ...state, isPlaying: action.payload };
     default:
       return state;
   }
@@ -179,7 +184,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadPathData();
-    dispatch({ type: "SET_CHAPTER_ID", payload: 1 });
+    dispatch({ type: "SET_CHAPTER_ID", payload: 0 });
   }, [state.pathId]);
 
   return (

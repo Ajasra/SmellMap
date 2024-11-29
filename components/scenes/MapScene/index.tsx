@@ -64,7 +64,7 @@ export function MapScene() {
           <MapBuildingsBg mapScale={scale} />
           <MapInteractive mapScale={scale} />
           <MouseSphere mapScale={scale} />
-          <SubwayPath mapScale={scale} />
+          {/*<SubwayPath mapScale={scale} />*/}
           <Patches mapScale={scale} />
         </group>
       </Canvas>

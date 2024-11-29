@@ -98,6 +98,8 @@ export function MapBuildingsBg({ mapScale }: { mapScale: number }) {
         flatShading={true}
         shininess={100}
         reflectivity={1}
+        opacity={0.7}
+        transparent={true}
       />
     </instancedMesh>
   );

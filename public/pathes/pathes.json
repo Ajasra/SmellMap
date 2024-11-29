@@ -1,9 +1,8 @@
 [
   {
     "id": 1,
-    "title": "Path 1",
+    "title": "0_24 home-nonation",
     "description": "Description for Path 1",
-    "modelFile": "path/to/model1.glb",
     "points": 9,
     "position": {
       "x": 1,
@@ -15,30 +14,171 @@
   },
   {
     "id": 2,
-    "title": "Path 2",
+    "title": "10_26 sullivan-home",
     "description": "Description for Path 2",
-    "modelFile": "path/to/model2.glb",
-    "points": 9,
+    "points": 7,
     "position": {
       "x": -1,
       "y": -1,
       "z": -1
     },
-    "color": "#0085b8",
-    "colorArrow": "#bad2df"
+    "color": "#a556fd",
+    "colorArrow": "#f3d3c3"
   },
   {
     "id": 3,
-    "title": "Path 3",
+    "title": "10_26 sullivan-sharp",
     "description": "Description for Path 3",
-    "modelFile": "path/to/model3.glb",
+    "points": 4,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#f9793a",
+    "colorArrow": "#602102"
+  },
+  {
+    "id": 4,
+    "title": "10_28 palmerhouse-social security",
+    "description": "Description for Path 3",
+    "points": 16,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#50e689",
+    "colorArrow": "#3a654a"
+  },
+  {
+    "id": 5,
+    "title": "home-sullivan",
+    "description": "Description for Path 3",
+    "points": 7,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#4ffff0",
+    "colorArrow": "#a7a7a7"
+  },
+  {
+    "id": 6,
+    "title": "sullivan-home",
+    "description": "Description for Path 3",
+    "points": 6,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#444a4a",
+    "colorArrow": "#e7d3ee"
+  },
+  {
+    "id": 7,
+    "title": "home-maclean",
+    "description": "Description for Path 3",
+    "points": 11,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#38367c",
+    "colorArrow": "#d2d1f0"
+  },
+  {
+    "id": 8,
+    "title": "sullivan-maclean",
+    "description": "Description for Path 3",
     "points": 9,
     "position": {
       "x": 2,
       "y": -2,
       "z": 2
     },
-    "color": "#0000ff",
-    "colorArrow": "#bad2df"
+    "color": "#413821",
+    "colorArrow": "#ff9141"
+  },
+  {
+    "id": 9,
+    "title": "sullivan-maclean",
+    "description": "Description for Path 3",
+    "points": 10,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#5b89af",
+    "colorArrow": "#cdd4da"
+  },
+  {
+    "id": 10,
+    "title": "home-target",
+    "description": "Description for Path 3",
+    "points": 8,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#ff0000",
+    "colorArrow": "#e1e1e1"
+  },
+  {
+    "id": 11,
+    "title": "home-depaul",
+    "description": "Description for Path 3",
+    "points": 12,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#001eff",
+    "colorArrow": "#a2b2c5"
+  },
+  {
+    "id": 12,
+    "title": "sullivan",
+    "description": "Description for Path 3",
+    "points": 5,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#ffb525",
+    "colorArrow": "#3e2c0a"
+  },
+  {
+    "id": 13,
+    "title": "sullivan-home",
+    "description": "Description for Path 3",
+    "points": 9,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#000000",
+    "colorArrow": "#a6a39e"
+  },
+  {
+    "id": 14,
+    "title": "cow-maclean",
+    "description": "Description for Path 3",
+    "points": 8,
+    "position": {
+      "x": 2,
+      "y": -2,
+      "z": 2
+    },
+    "color": "#3c2c04",
+    "colorArrow": "#fc9b5a"
   }
 ]

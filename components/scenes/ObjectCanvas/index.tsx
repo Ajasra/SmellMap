@@ -21,7 +21,7 @@ export function TopRightCanvas() {
       <directionalLight position={[2, 2, 2]} intensity={2} />
       <OrbitControls enableZoom={false} enablePan={false} />
       <StatueModel />
-      <SculptureInteractive />
+      {/*<SculptureInteractive />*/}
     </Canvas>
   );
 }

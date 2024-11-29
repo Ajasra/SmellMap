@@ -6,7 +6,7 @@ import { useAppContext } from "../../context/AppContext";
 const VideoPlayer = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { state, dispatch } = useAppContext();
-  const { pathId, chapterId, volume, isLoaded, isDebug } = state;
+  const { pathId, chapterId, volume, isLoaded, isDebug, isPlaying } = state;
   const [videoSrc, setVideoSrc] = useState("");
 
   const mode = "path";
@@ -15,8 +15,11 @@ const VideoPlayer = () => {
     if (mode == "path") {
       const currentPath = state.pathes.find((path) => path.id === pathId);
       let currentId = chapterId + 1;
-      if (currentId > currentPath.points) currentId = 1;
-      dispatch({ type: "SET_CHAPTER_ID", payload: currentId });
+      if (currentId > currentPath.points) {
+        dispatch({ type: "SET_IS_PLAYING", payload: false });
+      }else{
+        dispatch({ type: "SET_CHAPTER_ID", payload: currentId });
+      }
     } else if (mode == "all") {
       const currentPathIndex = state.pathes.findIndex(
         (path) => path.id === pathId,
@@ -64,14 +67,17 @@ const VideoPlayer = () => {
 
   return (
     <>
-      {isLoaded && (
+      {isLoaded && isPlaying ? (
         <video
           ref={videoRef}
           className={css.fullscreenVideo}
           src={videoSrc}
           onEnded={nextVideo}
         />
-      )}
+      ):(
+          <></>
+      )
+      }
       {isDebug && (
         <div>
           <div>pathId: {pathId}</div>
