@@ -2,13 +2,14 @@ import * as THREE from "three";
 import { useAppContext } from "../../context/AppContext";
 import React, { useEffect, useRef, useState } from "react";
 import { RadiantFieldGeo } from "../../objects/RadiantFieldGeo";
-import { MeshLine } from "three.meshline";
-import { Line2} from "three/examples/jsm/lines/Line2";
-import "../../objects/MeshLine/index.ts";
-import {extend} from "@react-three/fiber";
-import {randInt} from "three/src/math/MathUtils";
-
-extend({ Line2 });
+import { randInt } from "three/src/math/MathUtils";
+import { extend } from "@react-three/fiber";
+import {
+  MeshLine,
+  MeshLineMaterial,
+  MeshLineGeometry,
+} from "@lume/three-meshline";
+extend({ MeshLine, MeshLineGeometry, MeshLineMaterial });
 
 const pathPlayTime = 10;
 
@@ -17,6 +18,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   const [hoveredObject, setHoveredObject] = useState(null);
   const lineRef = useRef<THREE.Mesh>(null);
   const [color, setColor] = useState(new THREE.Color(0x000000));
+  const [linePoints, setLinePoints] = useState([]);
 
   const [nextPath, setNextPath] = useState(0);
 
@@ -31,17 +33,20 @@ export function Patches({ mapScale }: { mapScale: number }) {
   }, [pathData, pathes, pathId]);
 
   useEffect(() => {
-    if (lineRef.current && pathData.pathData.length > 0) {
+    console.log(pathData.pathData);
+    // if (lineRef.current && pathData.pathData.length > 0) {
+    if (pathData.pathData.length > 0) {
+      let pt = [];
       const points = pathData.pathData.map(
         (point) =>
-          new THREE.Vector3(point.x * mapScale, .9, -point.y * mapScale),
+          new THREE.Vector3(point.x * mapScale, 0.9, -point.y * mapScale),
       );
-      const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const line = new MeshLine();
-      line.setGeometry(geometry);
-      lineRef.current.geometry = line.geometry;
+      points.forEach((point) => {
+        pt.push(point.x, point.y, point.z);
+      });
+      setLinePoints(pt);
     }
-  }, [pathData.pathData, mapScale]);
+  }, [pathData.pathData, mapScale, pathId]);
 
   useEffect(() => {
     if (activePatch) {
@@ -54,22 +59,19 @@ export function Patches({ mapScale }: { mapScale: number }) {
     dispatch({ type: "SET_IS_PLAYING", payload: true });
   }
 
-  console.log(isPlaying);
-
-useEffect(() => {
-  const timer = setInterval(() => {
-    console.log(isPlaying);
-    if (!isPlaying) {
-      if (nextPath === 0) {
-        nextPathPlay();
-      } else {
-        setNextPath((prev) => prev - 1);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isPlaying) {
+        if (nextPath === 0) {
+          nextPathPlay();
+        } else {
+          setNextPath((prev) => prev - 1);
+        }
       }
-    }
-  }, 1000);
+    }, 1000);
 
-  return () => clearInterval(timer);
-}, [isPlaying, nextPath]);
+    return () => clearInterval(timer);
+  }, [isPlaying, nextPath]);
 
   function nextPathPlay() {
     const nextPathIndex = randInt(1, pathes.length);
@@ -84,7 +86,7 @@ useEffect(() => {
         activePatch.points &&
         pathData.pointsData.length > 0 &&
         pathData.pointsData.map((patch, index) => {
-          const isHighlighted = index === chapterId-1;
+          const isHighlighted = index === chapterId - 1;
           const isHovered = index === hoveredObject;
           return (
             <group
@@ -93,7 +95,7 @@ useEffect(() => {
               scale={0.3}
             >
               <mesh
-                onClick={() => updateChapterId(index+1)}
+                onClick={() => updateChapterId(index + 1)}
                 scale={isHovered ? 1.5 : 1}
                 onPointerOver={() => setHoveredObject(index)}
                 onPointerOut={() => setHoveredObject(null)}
@@ -105,18 +107,18 @@ useEffect(() => {
                 />
               </mesh>
               {isHighlighted && isPlaying ? (
-                <RadiantFieldGeo position={[0, -.5, 0]} color={color} />
-              ):(
-                  <></>
-              )
-              }
+                <RadiantFieldGeo position={[0, -0.5, 0]} color={color} />
+              ) : (
+                <></>
+              )}
             </group>
           );
         })}
       {activePatch && pathData.pathData.length > 0 && (
-        <mesh ref={lineRef}>
-          <meshLineMaterial attach="material" color={color} lineWidth={0.2} />
-        </mesh>
+        <meshLine>
+          <meshLineGeometry attach="geometry" points={linePoints} />
+          <meshLineMaterial attach="material" lineWidth={0.1} color={color} />
+        </meshLine>
       )}
     </>
   );
