@@ -65,7 +65,7 @@ const initialState: AppState = {
   pathes: [],
   volume: 0.5,
   isLoaded: false,
-  isDebug: true,
+  isDebug: false,
   interactiveObjects: [],
   pathData: { pathData: [], pointsData: [] },
   isPlaying: false,
