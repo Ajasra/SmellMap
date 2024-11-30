@@ -23,10 +23,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   const [currentPoints, setCurrentPoints] = useState([]);
   const [length, setLength] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [grow, setGrow] = useState(true);
   const [wait, setWait] = useState(pathPlayTime);
-  const [fadeOut, setFadeOut] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
 
   const [curState, setCurState] = useState(0);
 
@@ -142,6 +139,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
         } else {
           if (length > 0) {
             setCurState(2);
+            setWait(pathPlayTime);
           }
         }
         break;
@@ -154,7 +152,45 @@ export function Patches({ mapScale }: { mapScale: number }) {
         }
         break;
       case 3:
-        setCurState(4);
+        if (progress > 0) {
+          let pr = Math.max(0, progress - delta * animSpeed * length * 2);
+          setProgress(pr);
+
+          let currentLength = 0;
+          let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
+
+          for (let i = 0; i < linePoints.length - 1; i += 3) {
+            const start = new THREE.Vector3(
+              linePoints[i],
+              linePoints[i + 1],
+              linePoints[i + 2],
+            );
+            const end = new THREE.Vector3(
+              linePoints[i + 3],
+              linePoints[i + 4],
+              linePoints[i + 5],
+            );
+            const segmentLength = start.distanceTo(end);
+
+            if (currentLength + segmentLength >= progress) {
+              const remainingLength = progress - currentLength;
+              const direction = end.clone().sub(start).normalize();
+              const newEnd = start
+                .clone()
+                .add(direction.multiplyScalar(remainingLength));
+              currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
+              break;
+            } else {
+              currentPoints.push(end.x, end.y, end.z);
+              currentLength += segmentLength;
+            }
+          }
+
+          points = currentPoints;
+        } else {
+          setCurState(4);
+        }
+
         break;
       default:
         break;
@@ -201,8 +237,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   return (
     <>
       {activePatch &&
-        curState != 0 &&
-        curState != 4 &&
+        (curState === 2 || curState === 3) &&
         activePatch.points &&
         pathData.pointsData.length > 0 &&
         pathData.pointsData.map((patch, index) => {
@@ -211,8 +246,8 @@ export function Patches({ mapScale }: { mapScale: number }) {
           return (
             <group
               key={patch.x + patch.y + patch.z}
-              position={[patch.x * mapScale, 1, -patch.y * mapScale]}
-              scale={0.3}
+              position={[patch.x * mapScale, 1.3, -patch.y * mapScale]}
+              scale={0.4}
             >
               <mesh
                 onClick={() => updateChapterId(index + 1)}
@@ -245,7 +280,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
             </group>
           );
         })}
-      {activePatch && pathData.pathData.length > 0 && (
+      {activePatch && curState !== 4 && pathData.pathData.length > 0 && (
         <meshLine
         // onClick={() => updateChapterId(1)}
         >
