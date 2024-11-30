@@ -13,7 +13,7 @@ extend({ MeshLine, MeshLineGeometry, MeshLineMaterial });
 import { Text } from "@react-three/drei";
 
 const pathPlayTime = 5;
-const animSpeed = .3;
+const animSpeed = 0.3;
 
 export function Patches({ mapScale }: { mapScale: number }) {
   const [activePatch, setActivePatch] = useState(null);
@@ -78,7 +78,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if(nextPath < 0){
+      if (nextPath < 0) {
         if (!isPlaying && isFinished) {
           nextPathPlay();
           setNextPath((prev) => prev - 1);
@@ -138,9 +138,9 @@ export function Patches({ mapScale }: { mapScale: number }) {
         }
 
         points = currentPoints;
-      }else{
-        if(length > 0) {
-          if(grow){
+      } else {
+        if (length > 0) {
+          if (grow) {
             setWait(pathPlayTime);
           }
           setGrow(false);
@@ -148,17 +148,17 @@ export function Patches({ mapScale }: { mapScale: number }) {
       }
     }
 
-    if(!grow && !fadeOut && !isPlaying){
-      if(wait > 0){
+    if (!grow && !fadeOut && !isPlaying) {
+      if (wait > 0) {
         const waitTime = wait - delta;
         setWait(waitTime);
-      }else{
+      } else {
         setWait(0);
         setFadeOut(true);
       }
     }
 
-    if(!grow && wait <= 0){
+    if (!grow && wait <= 0) {
       setFadeOut(false);
       setIsFinished(true);
     }
@@ -204,6 +204,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   return (
     <>
       {activePatch &&
+        !isFinished &&
         activePatch.points &&
         pathData.pointsData.length > 0 &&
         pathData.pointsData.map((patch, index) => {
