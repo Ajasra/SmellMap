@@ -1,29 +1,37 @@
 import * as THREE from "three";
 import { useAppContext } from "../../context/AppContext";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RadiantFieldGeo } from "../../objects/RadiantFieldGeo";
 import { randInt } from "three/src/math/MathUtils";
-import { extend } from "@react-three/fiber";
+import { extend, useFrame } from "@react-three/fiber";
 import {
   MeshLine,
   MeshLineMaterial,
   MeshLineGeometry,
 } from "@lume/three-meshline";
 extend({ MeshLine, MeshLineGeometry, MeshLineMaterial });
+import { Text } from "@react-three/drei";
 
-const pathPlayTime = 10;
+const pathPlayTime = 5;
+const animSpeed = .3;
 
 export function Patches({ mapScale }: { mapScale: number }) {
   const [activePatch, setActivePatch] = useState(null);
   const [hoveredObject, setHoveredObject] = useState(null);
-  const lineRef = useRef<THREE.Mesh>(null);
   const [color, setColor] = useState(new THREE.Color(0x000000));
   const [linePoints, setLinePoints] = useState([]);
+  const [currentPoints, setCurrentPoints] = useState([]);
+  const [length, setLength] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [grow, setGrow] = useState(true);
+  const [wait, setWait] = useState(pathPlayTime);
+  const [fadeOut, setFadeOut] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
 
   const [nextPath, setNextPath] = useState(0);
 
   const { state, dispatch } = useAppContext();
-  const { MP, pathData, chapterId, pathes, pathId, isPlaying } = state;
+  const { MP, pathData, chapterId, pathes, pathId, isPlaying, isDebug } = state;
 
   useEffect(() => {
     let actPath = pathes.find((path) => path.id === pathId);
@@ -33,18 +41,27 @@ export function Patches({ mapScale }: { mapScale: number }) {
   }, [pathData, pathes, pathId]);
 
   useEffect(() => {
-    console.log(pathData.pathData);
-    // if (lineRef.current && pathData.pathData.length > 0) {
     if (pathData.pathData.length > 0) {
       let pt = [];
       const points = pathData.pathData.map(
         (point) =>
           new THREE.Vector3(point.x * mapScale, 0.9, -point.y * mapScale),
       );
+
+      let length = 0;
+      for (let i = 0; i < points.length - 1; i++) {
+        length += points[i].distanceTo(points[i + 1]);
+      }
+      setLength(length);
+
       points.forEach((point) => {
         pt.push(point.x, point.y, point.z);
       });
       setLinePoints(pt);
+      setProgress(0);
+      setGrow(true);
+      setIsFinished(false);
+      setFadeOut(false);
     }
   }, [pathData.pathData, mapScale, pathId]);
 
@@ -61,23 +78,124 @@ export function Patches({ mapScale }: { mapScale: number }) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!isPlaying) {
-        if (nextPath === 0) {
+      if (!isPlaying && isFinished) {
           nextPathPlay();
-        } else {
           setNextPath((prev) => prev - 1);
-        }
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isPlaying, nextPath]);
+  }, [isPlaying, nextPath, isFinished]);
 
   function nextPathPlay() {
     const nextPathIndex = randInt(1, pathes.length);
-    setNextPath(pathPlayTime);
+    // const nextPathIndex = pathId + 1;
+    setNextPath(9999);
     dispatch({ type: "SET_PATH_ID", payload: nextPathIndex });
   }
+
+  useFrame((state, delta) => {
+    let points = [];
+    if (grow) {
+      if (progress < length) {
+        if (linePoints.length === 0) return;
+
+        let pr = Math.min(length, progress + delta * animSpeed * length);
+        setProgress(pr);
+
+        let currentLength = 0;
+        let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
+
+        for (let i = 0; i < linePoints.length - 1; i += 3) {
+          const start = new THREE.Vector3(
+            linePoints[i],
+            linePoints[i + 1],
+            linePoints[i + 2],
+          );
+          const end = new THREE.Vector3(
+            linePoints[i + 3],
+            linePoints[i + 4],
+            linePoints[i + 5],
+          );
+          const segmentLength = start.distanceTo(end);
+
+          if (currentLength + segmentLength >= progress) {
+            const remainingLength = progress - currentLength;
+            const direction = end.clone().sub(start).normalize();
+            const newEnd = start
+              .clone()
+              .add(direction.multiplyScalar(remainingLength));
+            currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
+            // currentPoints.push(start.x, start.y, start.z);
+            break;
+          } else {
+            currentPoints.push(end.x, end.y, end.z);
+            currentLength += segmentLength;
+          }
+        }
+
+        points = currentPoints;
+      }else{
+        if(length > 0) {
+          if(grow){
+            setWait(pathPlayTime);
+          }
+          setGrow(false);
+        }
+      }
+    }
+
+    if(!grow && !fadeOut && !isPlaying){
+      if(wait > 0){
+        const waitTime = wait - delta;
+        setWait(waitTime);
+      }else{
+        setWait(0);
+        setFadeOut(true);
+      }
+    }
+
+    if(!grow && wait <= 0){
+      setFadeOut(false);
+      setIsFinished(true);
+    }
+
+    setCurrentPoints(points);
+  });
+
+  const getCurrentLinePoints = () => {
+    let currentLength = 0;
+    let currentPoints = [linePoints[0]];
+
+    for (let i = 0; i < linePoints.length - 1; i += 3) {
+      const start = new THREE.Vector3(
+        linePoints[i],
+        linePoints[i + 1],
+        linePoints[i + 2],
+      );
+      const end = new THREE.Vector3(
+        linePoints[i + 3],
+        linePoints[i + 4],
+        linePoints[i + 5],
+      );
+      const segmentLength = start.distanceTo(end);
+
+      if (currentLength + segmentLength > length * progress) {
+        const remainingLength = length * progress - currentLength;
+        const direction = end.clone().sub(start).normalize();
+        const newEnd = start
+          .clone()
+          .add(direction.multiplyScalar(remainingLength));
+        currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
+        break;
+      } else {
+        currentPoints.push(end.x, end.y, end.z);
+        currentLength += segmentLength;
+      }
+    }
+
+    return currentPoints;
+  };
 
   // @ts-ignore
   return (
@@ -106,6 +224,17 @@ export function Patches({ mapScale }: { mapScale: number }) {
                   color={isHovered ? activePatch.colorArrow : activePatch.color}
                 />
               </mesh>
+              {isDebug && (
+                <Text
+                  position={[0, 0.8, 0]}
+                  fontSize={1}
+                  color={color}
+                  anchorX="center"
+                  anchorY="middle"
+                >
+                  {index + 1}
+                </Text>
+              )}
               {isHighlighted && isPlaying ? (
                 <RadiantFieldGeo position={[0, -0.5, 0]} color={color} />
               ) : (
@@ -115,8 +244,10 @@ export function Patches({ mapScale }: { mapScale: number }) {
           );
         })}
       {activePatch && pathData.pathData.length > 0 && (
-        <meshLine>
-          <meshLineGeometry attach="geometry" points={linePoints} />
+        <meshLine
+        // onClick={() => updateChapterId(1)}
+        >
+          <meshLineGeometry attach="geometry" points={currentPoints} />
           <meshLineMaterial attach="material" lineWidth={0.1} color={color} />
         </meshLine>
       )}

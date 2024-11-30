@@ -13,11 +13,11 @@ const VideoPlayer = () => {
 
   const nextVideo = () => {
     if (mode == "path") {
+      videoRef.current.pause();
+      dispatch({ type: "SET_IS_PLAYING", payload: false })
       const currentPath = state.pathes.find((path) => path.id === pathId);
       let currentId = chapterId + 1;
-      if (currentId > currentPath.points) {
-        dispatch({ type: "SET_IS_PLAYING", payload: false });
-      }else{
+      if (currentId < currentPath.points) {
         dispatch({ type: "SET_CHAPTER_ID", payload: currentId });
       }
     } else if (mode == "all") {
@@ -34,8 +34,16 @@ const VideoPlayer = () => {
     }
   };
 
+  const closeVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+    dispatch({ type: "SET_IS_PLAYING", payload: false });
+  };
+
   useEffect(() => {
     const checkVideoExists = async () => {
+      dispatch({ type: "SET_IS_PLAYING", payload: true });
       const videoUrl = `/pathes/${pathId}/${chapterId}.mp4`;
       try {
         const response = await fetch(videoUrl, { method: "HEAD" });
@@ -49,7 +57,9 @@ const VideoPlayer = () => {
       }
     };
 
-    checkVideoExists();
+    if (pathId !== 0 && chapterId !== 0) {
+      checkVideoExists();
+    }
   }, [pathId, chapterId]);
 
   useEffect(() => {
@@ -66,25 +76,29 @@ const VideoPlayer = () => {
   }, [volume]);
 
   return (
-    <>
-      {isLoaded && isPlaying ? (
-        <video
-          ref={videoRef}
-          className={css.fullscreenVideo}
-          src={videoSrc}
-          onEnded={nextVideo}
-        />
-      ):(
-          <></>
-      )
-      }
-      {isDebug && (
-        <div>
-          <div>pathId: {pathId}</div>
-          <div>chapterId: {chapterId}</div>
-        </div>
-      )}
-    </>
+      <>
+        {isLoaded && isPlaying ? (
+            <div className={css.videoContainer}>
+              <button className={css.closeButton} onClick={closeVideo}>
+                &#x2715;
+              </button>
+              <video
+                  ref={videoRef}
+                  className={css.fullscreenVideo}
+                  src={videoSrc}
+                  onEnded={nextVideo}
+              />
+            </div>
+        ) : (
+            <></>
+        )}
+        {isDebug && (
+            <div className={css.debug}>
+              <div>pathId: {pathId}</div>
+              <div>chapterId: {chapterId}</div>
+            </div>
+        )}
+      </>
   );
 };
 

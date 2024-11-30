@@ -185,6 +185,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     loadPathData();
     dispatch({ type: "SET_CHAPTER_ID", payload: 0 });
+    dispatch({ type: "SET_IS_PLAYING", payload: false });
   }, [state.pathId]);
 
   return (
