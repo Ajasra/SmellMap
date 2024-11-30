@@ -28,6 +28,8 @@ export function Patches({ mapScale }: { mapScale: number }) {
   const [fadeOut, setFadeOut] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
 
+  const [curState, setCurState] = useState(0);
+
   const [nextPath, setNextPath] = useState(0);
 
   const { state, dispatch } = useAppContext();
@@ -59,9 +61,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
       });
       setLinePoints(pt);
       setProgress(0);
-      setGrow(true);
-      setIsFinished(false);
-      setFadeOut(false);
+      setCurState(1);
     }
   }, [pathData.pathData, mapScale, pathId]);
 
@@ -79,7 +79,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   useEffect(() => {
     const timer = setInterval(() => {
       if (nextPath < 0) {
-        if (!isPlaying && isFinished) {
+        if (!isPlaying && curState === 4) {
           nextPathPlay();
           setNextPath((prev) => prev - 1);
         }
@@ -88,7 +88,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isPlaying, nextPath, isFinished]);
+  }, [isPlaying, nextPath, curState]);
 
   function nextPathPlay() {
     const nextPathIndex = randInt(1, pathes.length);
@@ -99,68 +99,65 @@ export function Patches({ mapScale }: { mapScale: number }) {
 
   useFrame((state, delta) => {
     let points = [];
-    if (grow) {
-      if (progress < length) {
-        if (linePoints.length === 0) return;
+    switch (curState) {
+      case 1:
+        if (progress < length) {
+          if (linePoints.length === 0) return;
 
-        let pr = Math.min(length, progress + delta * animSpeed * length);
-        setProgress(pr);
+          let pr = Math.min(length, progress + delta * animSpeed * length);
+          setProgress(pr);
 
-        let currentLength = 0;
-        let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
+          let currentLength = 0;
+          let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
 
-        for (let i = 0; i < linePoints.length - 1; i += 3) {
-          const start = new THREE.Vector3(
-            linePoints[i],
-            linePoints[i + 1],
-            linePoints[i + 2],
-          );
-          const end = new THREE.Vector3(
-            linePoints[i + 3],
-            linePoints[i + 4],
-            linePoints[i + 5],
-          );
-          const segmentLength = start.distanceTo(end);
+          for (let i = 0; i < linePoints.length - 1; i += 3) {
+            const start = new THREE.Vector3(
+              linePoints[i],
+              linePoints[i + 1],
+              linePoints[i + 2],
+            );
+            const end = new THREE.Vector3(
+              linePoints[i + 3],
+              linePoints[i + 4],
+              linePoints[i + 5],
+            );
+            const segmentLength = start.distanceTo(end);
 
-          if (currentLength + segmentLength >= progress) {
-            const remainingLength = progress - currentLength;
-            const direction = end.clone().sub(start).normalize();
-            const newEnd = start
-              .clone()
-              .add(direction.multiplyScalar(remainingLength));
-            currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
-            // currentPoints.push(start.x, start.y, start.z);
-            break;
-          } else {
-            currentPoints.push(end.x, end.y, end.z);
-            currentLength += segmentLength;
+            if (currentLength + segmentLength >= progress) {
+              const remainingLength = progress - currentLength;
+              const direction = end.clone().sub(start).normalize();
+              const newEnd = start
+                .clone()
+                .add(direction.multiplyScalar(remainingLength));
+              currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
+              // currentPoints.push(start.x, start.y, start.z);
+              break;
+            } else {
+              currentPoints.push(end.x, end.y, end.z);
+              currentLength += segmentLength;
+            }
+          }
+
+          points = currentPoints;
+        } else {
+          if (length > 0) {
+            setCurState(2);
           }
         }
-
-        points = currentPoints;
-      } else {
-        if (length > 0) {
-          if (grow) {
-            setWait(pathPlayTime);
-          }
-          setGrow(false);
+        break;
+      case 2:
+        if (wait > 0) {
+          const waitTime = wait - delta;
+          setWait(waitTime);
+        } else {
+          setCurState(3);
         }
-      }
-    }
-
-    if (!grow && !fadeOut && !isPlaying) {
-      if (wait > 0) {
-        const waitTime = wait - delta;
-        setWait(waitTime);
-      } else {
-        setWait(0);
-        setFadeOut(true);
-      }
-    }
-
-    if (!grow && wait <= 0) {
-      setFadeOut(false);
-      setIsFinished(true);
+        break;
+      case 3:
+        setCurState(4);
+        break;
+      default:
+        break;
     }
 
     setCurrentPoints(points);
@@ -204,7 +201,8 @@ export function Patches({ mapScale }: { mapScale: number }) {
   return (
     <>
       {activePatch &&
-        !isFinished &&
+        curState != 0 &&
+        curState != 4 &&
         activePatch.points &&
         pathData.pointsData.length > 0 &&
         pathData.pointsData.map((patch, index) => {
