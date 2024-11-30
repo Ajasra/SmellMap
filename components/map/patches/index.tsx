@@ -78,10 +78,13 @@ export function Patches({ mapScale }: { mapScale: number }) {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!isPlaying && isFinished) {
+      if(nextPath < 0){
+        if (!isPlaying && isFinished) {
           nextPathPlay();
           setNextPath((prev) => prev - 1);
+        }
       }
+      setNextPath((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(timer);
@@ -90,7 +93,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   function nextPathPlay() {
     const nextPathIndex = randInt(1, pathes.length);
     // const nextPathIndex = pathId + 1;
-    setNextPath(9999);
+    setNextPath(10);
     dispatch({ type: "SET_PATH_ID", payload: nextPathIndex });
   }
 
