@@ -76,9 +76,12 @@ export function Patches({ mapScale }: { mapScale: number }) {
   useEffect(() => {
     const timer = setInterval(() => {
       if (nextPath < 0) {
-        if (!isPlaying && curState === 4) {
+        if (!isPlaying && curState === 5) {
           nextPathPlay();
           setNextPath((prev) => prev - 1);
+        }
+        if (!isPlaying && curState === 4) {
+          setCurState(5);
         }
       }
       setNextPath((prev) => prev - 1);
@@ -144,53 +147,56 @@ export function Patches({ mapScale }: { mapScale: number }) {
         }
         break;
       case 2:
-        if (wait > 0) {
-          const waitTime = wait - delta;
-          setWait(waitTime);
-        } else {
-          setCurState(3);
+        if (!isPlaying) {
+          if (wait > 0) {
+            const waitTime = wait - delta;
+            setWait(waitTime);
+          } else {
+            setCurState(3);
+          }
         }
         break;
       case 3:
-        if (progress > 0) {
-          let pr = Math.max(0, progress - delta * animSpeed * length * 2);
-          setProgress(pr);
+        if (!isPlaying) {
+          if (progress > 0) {
+            let pr = Math.max(0, progress - delta * animSpeed * length * 2);
+            setProgress(pr);
 
-          let currentLength = 0;
-          let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
+            let currentLength = 0;
+            let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
 
-          for (let i = 0; i < linePoints.length - 1; i += 3) {
-            const start = new THREE.Vector3(
-              linePoints[i],
-              linePoints[i + 1],
-              linePoints[i + 2],
-            );
-            const end = new THREE.Vector3(
-              linePoints[i + 3],
-              linePoints[i + 4],
-              linePoints[i + 5],
-            );
-            const segmentLength = start.distanceTo(end);
+            for (let i = 0; i < linePoints.length - 1; i += 3) {
+              const start = new THREE.Vector3(
+                linePoints[i],
+                linePoints[i + 1],
+                linePoints[i + 2],
+              );
+              const end = new THREE.Vector3(
+                linePoints[i + 3],
+                linePoints[i + 4],
+                linePoints[i + 5],
+              );
+              const segmentLength = start.distanceTo(end);
 
-            if (currentLength + segmentLength >= progress) {
-              const remainingLength = progress - currentLength;
-              const direction = end.clone().sub(start).normalize();
-              const newEnd = start
-                .clone()
-                .add(direction.multiplyScalar(remainingLength));
-              currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
-              break;
-            } else {
-              currentPoints.push(end.x, end.y, end.z);
-              currentLength += segmentLength;
+              if (currentLength + segmentLength >= progress) {
+                const remainingLength = progress - currentLength;
+                const direction = end.clone().sub(start).normalize();
+                const newEnd = start
+                  .clone()
+                  .add(direction.multiplyScalar(remainingLength));
+                currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
+                break;
+              } else {
+                currentPoints.push(end.x, end.y, end.z);
+                currentLength += segmentLength;
+              }
             }
+
+            points = currentPoints;
+          } else {
+            setCurState(4);
           }
-
-          points = currentPoints;
-        } else {
-          setCurState(4);
         }
-
         break;
       default:
         break;
