@@ -17,8 +17,10 @@ const VideoPlayer = () => {
       dispatch({ type: "SET_IS_PLAYING", payload: false })
       const currentPath = state.pathes.find((path) => path.id === pathId);
       let currentId = chapterId + 1;
-      if (currentId < currentPath.points) {
+      if (currentId <= currentPath.points) {
         dispatch({ type: "SET_CHAPTER_ID", payload: currentId });
+      }else{
+        dispatch({type: "SET_CHAPTER_ID", payload: 0})
       }
     } else if (mode == "all") {
       const currentPathIndex = state.pathes.findIndex(
