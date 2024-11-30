@@ -79,16 +79,16 @@ export function Patches({ mapScale }: { mapScale: number }) {
         if (!isPlaying && curState === 0) {
           setCurState(1)
         }
-        if (!isPlaying && curState === 5) {
+        if (!isPlaying && curState === 4) {
           nextPathPlay();
           setNextPath((prev) => prev - 1);
         }
-        if (!isPlaying && curState === 4) {
-          setCurState(5);
-        }
+        // if (!isPlaying && curState === 4) {
+        //   setCurState(5);
+        // }
       }
       setNextPath((prev) => prev - 1);
-    }, 1000);
+    }, 500);
 
     return () => clearInterval(timer);
   }, [isPlaying, nextPath, curState]);
