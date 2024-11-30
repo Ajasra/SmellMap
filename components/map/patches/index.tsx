@@ -58,7 +58,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
       });
       setLinePoints(pt);
       setProgress(0);
-      setCurState(1);
+      setCurState(0);
     }
   }, [pathData.pathData, mapScale, pathId]);
 
@@ -76,6 +76,9 @@ export function Patches({ mapScale }: { mapScale: number }) {
   useEffect(() => {
     const timer = setInterval(() => {
       if (nextPath < 0) {
+        if (!isPlaying && curState === 0) {
+          setCurState(1)
+        }
         if (!isPlaying && curState === 5) {
           nextPathPlay();
           setNextPath((prev) => prev - 1);
