@@ -1,7 +1,7 @@
 "use client";
 
 // @ts-ignore
-import css from "/components/Scenes/MapScene/MapScene.module.css";
+import css from "./MapScene.module.css";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { useEffect, useState } from "react";
