@@ -1,10 +1,10 @@
 "use client";
 
 // @ts-ignore
-import css from "../MainScene/MainScene.module.css";
+import css from "/components/Scenes/MapScene/MapScene.module.css";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapRiver } from "../../map/elements/water";
 import { MapTrees } from "../../map/elements/trees";
 import { MapBuildingsBg } from "../../map/elements/buildings_bg";
@@ -15,10 +15,10 @@ import { MouseSphere } from "../../objects/mouse";
 import * as THREE from "three";
 import { TopRightCanvas } from "../ObjectCanvas";
 import { MapLake } from "../../map/elements/Lake";
-import { SubwayPath } from "../../map/elements/subway";
 import { useAppContext } from "../../context/AppContext";
 import { Vector3 } from "three";
 import { Patches } from "../../map/patches";
+import InstructionModal from "../../UI/Instruction";
 
 const scale = 30;
 const offset = new Vector3(-scale / 2, 0, scale / 2);
@@ -28,19 +28,26 @@ export function MapScene() {
 
   const { state, dispatch } = useAppContext();
   const { isLoaded } = state;
+  const [showInstruction, setShowInstruction] = useState(true);
 
   useEffect(() => {
     dispatch({ type: "SET_IS_LOADED", payload: false });
+    dispatch({ type: "SET_CHAPTER_ID", payload: 0 });
   }, []);
 
   const handleCanvasCreated = () => {
     dispatch({ type: "SET_IS_LOADED", payload: true });
   };
 
+  const handleCloseInstruction = () => {
+    setShowInstruction(false);
+  };
 
   return (
     <div className={css.container}>
       {!isLoaded && <div className="loader">Loading...</div>}
+      {showInstruction && <InstructionModal onClose={handleCloseInstruction} />}
+
       <Canvas
         style={{
           width: "100vw",

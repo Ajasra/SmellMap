@@ -3,14 +3,30 @@ import { useAppContext } from "../../context/AppContext";
 import React, { useEffect, useState } from "react";
 import { RadiantFieldGeo } from "../../objects/RadiantFieldGeo";
 import { randInt } from "three/src/math/MathUtils";
-import { extend, useFrame } from "@react-three/fiber";
+import { extend, ReactThreeFiber, useFrame } from "@react-three/fiber";
 import {
   MeshLine,
   MeshLineMaterial,
   MeshLineGeometry,
 } from "@lume/three-meshline";
-extend({ MeshLine, MeshLineGeometry, MeshLineMaterial });
 import { Text } from "@react-three/drei";
+
+extend({ MeshLine, MeshLineGeometry, MeshLineMaterial });
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      meshLine: ReactThreeFiber.Object3DNode<MeshLine, typeof MeshLine>;
+      meshLineGeometry: ReactThreeFiber.Object3DNode<
+        MeshLineGeometry,
+        typeof MeshLineGeometry
+      >;
+      meshLineMaterial: ReactThreeFiber.Object3DNode<
+        MeshLineMaterial,
+        typeof MeshLineMaterial
+      >;
+    }
+  }
+}
 
 const pathPlayTime = 5;
 const animSpeed = 0.3;
@@ -30,7 +46,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
   const [nextPath, setNextPath] = useState(0);
 
   const { state, dispatch } = useAppContext();
-  const { MP, pathData, chapterId, pathes, pathId, isPlaying, isDebug } = state;
+  const { pathData, chapterId, pathes, pathId, isPlaying, isDebug } = state;
 
   useEffect(() => {
     let actPath = pathes.find((path) => path.id === pathId);
@@ -44,7 +60,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
       let pt = [];
       const points = pathData.pathData.map(
         (point) =>
-          new THREE.Vector3(point.x * mapScale, 0.9, -point.y * mapScale),
+          new THREE.Vector3(point["x"] * mapScale, 0.9, -point["y"] * mapScale),
       );
 
       let length = 0;
@@ -77,7 +93,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
     const timer = setInterval(() => {
       if (nextPath < 0) {
         if (!isPlaying && curState === 0) {
-          setCurState(1)
+          setCurState(1);
         }
         if (!isPlaying && curState === 4) {
           nextPathPlay();
@@ -124,6 +140,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
               linePoints[i + 4],
               linePoints[i + 5],
             );
+
             const segmentLength = start.distanceTo(end);
 
             if (currentLength + segmentLength >= progress) {
@@ -165,19 +182,33 @@ export function Patches({ mapScale }: { mapScale: number }) {
             let pr = Math.max(0, progress - delta * animSpeed * length * 2);
             setProgress(pr);
 
-            let currentLength = 0;
-            let currentPoints = [linePoints[0], linePoints[1], linePoints[2]];
-
-            for (let i = 0; i < linePoints.length - 1; i += 3) {
-              const start = new THREE.Vector3(
+            // invert the path
+            let invertedPoints = [];
+            for (let i = linePoints.length - 1; i >= 0; i -= 3) {
+              invertedPoints.push(
+                linePoints[i - 2],
+                linePoints[i - 1],
                 linePoints[i],
-                linePoints[i + 1],
-                linePoints[i + 2],
+              );
+            }
+
+            let currentLength = 0;
+            let currentPoints = [
+              invertedPoints[0],
+              invertedPoints[1],
+              invertedPoints[2],
+            ];
+
+            for (let i = 0; i < invertedPoints.length - 1; i += 3) {
+              const start = new THREE.Vector3(
+                invertedPoints[i],
+                invertedPoints[i + 1],
+                invertedPoints[i + 2],
               );
               const end = new THREE.Vector3(
-                linePoints[i + 3],
-                linePoints[i + 4],
-                linePoints[i + 5],
+                invertedPoints[i + 3],
+                invertedPoints[i + 4],
+                invertedPoints[i + 5],
               );
               const segmentLength = start.distanceTo(end);
 
@@ -208,41 +239,6 @@ export function Patches({ mapScale }: { mapScale: number }) {
     setCurrentPoints(points);
   });
 
-  const getCurrentLinePoints = () => {
-    let currentLength = 0;
-    let currentPoints = [linePoints[0]];
-
-    for (let i = 0; i < linePoints.length - 1; i += 3) {
-      const start = new THREE.Vector3(
-        linePoints[i],
-        linePoints[i + 1],
-        linePoints[i + 2],
-      );
-      const end = new THREE.Vector3(
-        linePoints[i + 3],
-        linePoints[i + 4],
-        linePoints[i + 5],
-      );
-      const segmentLength = start.distanceTo(end);
-
-      if (currentLength + segmentLength > length * progress) {
-        const remainingLength = length * progress - currentLength;
-        const direction = end.clone().sub(start).normalize();
-        const newEnd = start
-          .clone()
-          .add(direction.multiplyScalar(remainingLength));
-        currentPoints.push(newEnd.x, newEnd.y, newEnd.z);
-        break;
-      } else {
-        currentPoints.push(end.x, end.y, end.z);
-        currentLength += segmentLength;
-      }
-    }
-
-    return currentPoints;
-  };
-
-  // @ts-ignore
   return (
     <>
       {activePatch &&
@@ -254,8 +250,8 @@ export function Patches({ mapScale }: { mapScale: number }) {
           const isHovered = index === hoveredObject;
           return (
             <group
-              key={patch.x + patch.y + patch.z}
-              position={[patch.x * mapScale, 1.3, -patch.y * mapScale]}
+              key={patch["x"] + patch["y"] + patch["z"]}
+              position={[patch["x"] * mapScale, 1.3, -patch["y"] * mapScale]}
               scale={0.4}
             >
               <mesh
@@ -290,9 +286,7 @@ export function Patches({ mapScale }: { mapScale: number }) {
           );
         })}
       {activePatch && curState !== 4 && pathData.pathData.length > 0 && (
-        <meshLine
-        // onClick={() => updateChapterId(1)}
-        >
+        <meshLine>
           <meshLineGeometry attach="geometry" points={currentPoints} />
           <meshLineMaterial attach="material" lineWidth={0.1} color={color} />
         </meshLine>
