@@ -69,13 +69,13 @@ export function MapScene() {
           <MapLake mapScale={scale} />
           <MapTrees mapScale={scale} />
           <MapBuildingsBg mapScale={scale} />
-          <MapInteractive mapScale={scale} />
+          {/*<MapInteractive mapScale={scale} />*/}
           <MouseSphere mapScale={scale} />
           {/*<SubwayPath mapScale={scale} />*/}
           <Patches mapScale={scale} />
         </group>
       </Canvas>
-      <TopRightCanvas />
+      {/*<TopRightCanvas />*/}
     </div>
   );
 }

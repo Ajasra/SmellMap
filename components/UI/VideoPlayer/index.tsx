@@ -82,7 +82,7 @@ const VideoPlayer = () => {
         {isLoaded && isPlaying ? (
             <div className={css.videoContainer}>
               <button className={css.closeButton} onClick={closeVideo}>
-                &#x2715;
+                <img src="/UI/close.png" alt="Close" width={50} />
               </button>
               <video
                   ref={videoRef}

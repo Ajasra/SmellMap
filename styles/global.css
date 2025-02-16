@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'DINCondenced';
+  src: url('/font/font.ttf') format('ttf');
+  font-weight: 900;
+  font-style: normal;
+}
+
+body {
+  font-family: 'DINCondenced', sans-serif;
+}

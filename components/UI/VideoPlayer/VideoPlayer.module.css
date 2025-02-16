@@ -1,27 +1,39 @@
 .videoContainer {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Ensure the video is behind other elements */
+  overflow: hidden;
 }
 
 .closeButton {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: '#ffffff';
-  opacity: 0.4;
-  border-radius: 6px;
+  background: none;
+  opacity: 0.9;
+  /*border-radius: 6px;*/
+  border: none;
   font-size: 24px;
   cursor: pointer;
-  color: black;
+  /*color: black;*/
   z-index: 1;
 }
 
 .closeButton:hover {
-    opacity: 0.8;
+    opacity: 1.0;
 }
 
 .fullscreenVideo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
+  object-fit: cover; /* Ensure the video covers the entire container */
+  transform: translate(-50%, -50%);
 }
 
 .debug {

@@ -7,16 +7,19 @@ import {Container, Flex} from "@mantine/core";
 const menuItems = [
   {
     title: 'Home',
-    link: '/'
-  },
-  {
-    title: 'About',
-    link: '/about'
+    link: '/',
+      left: "10px",
   },
   {
     title: 'Map',
-    link: '/chicago'
-  }
+    link: '/chicago',
+      left: "50px",
+  },
+    {
+        title: 'About',
+        link: '/about',
+        left: "15px",
+    }
 ];
 
 export default function MainMenu() {
@@ -35,41 +38,46 @@ export default function MainMenu() {
           top: "10px",
           left: "10px",
           zIndex: 1000,
-          padding: "16px",
-          backgroundColor: "#333",
+          padding: "0px",
+          background: "none",
           color: "#fff",
           border: "none",
           borderRadius: "5px",
           cursor: "pointer"
         }}
       >
-        <HamburgerMenuIcon />
+        <img src="/UI/menu.png" alt="menu" width={50}/>
       </button>
       {isMenuOpen && (
         <Container
           style={{
             position: "fixed",
-            top: "80px",
-            left: "10px",
-            zIndex: 999, backgroundColor: "rgba(255, 255, 255, 0.7)",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            borderRadius: "5px",
-            padding: "10px"
+            top: "60px",
+            left: "40px",
+            zIndex: 999, backgroundImage: "url('/UI/menu_2.png')",
+            backgroundSize: "cover",
+            padding: "0px",
+              height: "230px",
+                width: "150px",
+              overflowBlock: "visible",
           }}
         >
           <Flex direction="column">
               {menuItems.map((item) => (
                   <Container key={item.link}
                     style={{
-                        padding: "10px",
+                        padding: "12px",
                         width: "100px",
                         textAlign: "center",
+                        fontFamily: "DINCondenced",
+                        fontWeight: 800,
+                        fontSize: "24px",
+                        paddingLeft: item.left,
                     }}
                   >
                       <Link
                           style={{
-                            color: "#0085b8",
-                              fontSize: "24px"
+                            color: "#d4d3d6",
                           }}
                           href={item.link}
                       >
