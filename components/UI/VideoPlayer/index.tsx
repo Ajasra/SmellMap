@@ -36,12 +36,14 @@ const VideoPlayer = () => {
     }
   };
 
-  const closeVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
+  useEffect(() => {
+    if(!isPlaying){
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
     }
-    dispatch({ type: "SET_IS_PLAYING", payload: false });
-  };
+
+  },[state.isPlaying])
 
   useEffect(() => {
     const checkVideoExists = async () => {
@@ -81,9 +83,6 @@ const VideoPlayer = () => {
       <>
         {isLoaded && isPlaying ? (
             <div className={css.videoContainer}>
-              <button className={css.closeButton} onClick={closeVideo}>
-                <img src="/UI/close.png" alt="Close" width={50} />
-              </button>
               <video
                   ref={videoRef}
                   className={css.fullscreenVideo}
