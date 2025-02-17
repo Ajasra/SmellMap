@@ -69,8 +69,8 @@ export default function MainMenu() {
                         padding: "12px",
                         width: "100px",
                         textAlign: "center",
-                        fontFamily: "DINCondenced",
-                        fontWeight: 800,
+                        // fontFamily: "DINCondenced",
+                        fontWeight: 900,
                         fontSize: "24px",
                         paddingLeft: item.left,
                     }}

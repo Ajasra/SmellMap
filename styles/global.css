@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'DINCondenced';
-  src: url('/font/font.ttf') format('ttf');
+  src: url('/font/DIN-Bold.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
 }
