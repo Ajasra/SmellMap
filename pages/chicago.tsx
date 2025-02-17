@@ -16,14 +16,14 @@ export default function MapPage() {
     return (
     <main>
         <VideoPlayer />
-      <MapScene />
-      <MainMenu />
+        <MapScene />
+
         {state.isPlaying &&
          <button className="closeVideoButton" onClick={closeVideo} >
             <img src="/UI/close.png" alt="Close" width={50} height={50} />
         </button>
         }
-
+        <MainMenu />
     </main>
   );
 }

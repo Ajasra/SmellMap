@@ -37,7 +37,7 @@ export default function MainMenu() {
           position: "fixed",
           top: "10px",
           left: "10px",
-          zIndex: 1000,
+          zIndex: 999,
           padding: "0px",
           background: "none",
           color: "#fff",
@@ -67,12 +67,12 @@ export default function MainMenu() {
                   <Container key={item.link}
                     style={{
                         padding: "12px",
-                        width: "100px",
+                        // width: "100px",
                         textAlign: "center",
-                        // fontFamily: "DINCondenced",
                         fontWeight: 900,
                         fontSize: "24px",
                         paddingLeft: item.left,
+                        cursorType: "pointer",
                     }}
                   >
                       <Link
