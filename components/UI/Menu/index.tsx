@@ -72,7 +72,7 @@ export default function MainMenu() {
                         fontWeight: 900,
                         fontSize: "24px",
                         paddingLeft: item.left,
-                        cursorType: "pointer",
+                        cursor: "pointer",
                     }}
                   >
                       <Link
