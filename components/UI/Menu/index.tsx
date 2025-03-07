@@ -32,9 +32,9 @@ export default function MainMenu() {
   };
 
   const handleMenuClick = (url) => {
-    // alert(url);
+    alert(url);
     useRoute.push(url);
-    setIsMenuOpen(false);
+    // setIsMenuOpen(false);
   }
 
 
@@ -83,6 +83,7 @@ export default function MainMenu() {
                         fontSize: "24px",
                         paddingLeft: item.left,
                         cursor: "pointer",
+                        color: "#d4d3d6"
                     }}
                   >
                     {item.title}
