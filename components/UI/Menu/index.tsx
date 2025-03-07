@@ -32,7 +32,7 @@ export default function MainMenu() {
   };
 
   const handleMenuClick = (url) => {
-    alert(url);
+    // alert(url);
     useRoute.push(url);
     // setIsMenuOpen(false);
   }
