@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import {HamburgerMenuIcon} from "@radix-ui/react-icons";
 import {Container, Flex} from "@mantine/core";
@@ -24,10 +25,18 @@ const menuItems = [
 
 export default function MainMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const useRoute = useRouter();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleMenuClick = (url) => {
+    // alert(url);
+    useRoute.push(url);
+    setIsMenuOpen(false);
+  }
+
 
   return (
     <div>
@@ -65,6 +74,7 @@ export default function MainMenu() {
           <Flex direction="column">
               {menuItems.map((item) => (
                   <Container key={item.link}
+                    onClick={() => handleMenuClick(item.link)}
                     style={{
                         padding: "12px",
                         // width: "100px",
@@ -75,14 +85,7 @@ export default function MainMenu() {
                         cursor: "pointer",
                     }}
                   >
-                      <Link
-                          style={{
-                            color: "#d4d3d6",
-                          }}
-                          href={item.link}
-                      >
-                          {item.title}
-                      </Link>
+                    {item.title}
                   </Container>
               ))}
           </Flex>
